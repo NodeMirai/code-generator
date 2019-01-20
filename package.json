@@ -1,0 +1,15 @@
+{
+  "name": "AstGenerator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/NodeMirai/AstGenerator",
+  "author": "nodemirai <wuyunfeng0@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/generator": "^7.2.2",
+    "@babel/parser": "^7.2.3",
+    "@babel/traverse": "^7.2.3",
+    "@babel/types": "^7.2.2"
+  }
+}
