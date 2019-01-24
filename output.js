@@ -1,1 +1,17 @@
-"import React, { Component } from 'react';\nimport './style.scss';\n\n//import\n\"A little high, little low.\";\nclass Demo extends Component {\n\n  render() {\n    return (\n      <div className='demo'>\r\n        {this.props.content}\r\n      </div>);\n\n  }}\n\n\nexport default Demo;"
+import React, { Component } from 'react';
+import './style.scss';
+
+//import
+import { tab as hehe } from "Hahaha";
+class Demo extends Component {
+
+  render() {
+    return (
+      <div className='demo'>
+        {this.props.content}
+      </div>);
+
+  }}
+
+
+export default Demo;

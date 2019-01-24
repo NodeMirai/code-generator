@@ -51,6 +51,7 @@ componentAst.forEach((item, index) => {
     });
 })
 
+console.log(children)
 /**
  * 向模板中插入component
  * 1. import 
@@ -59,17 +60,31 @@ componentAst.forEach((item, index) => {
  * 4. render中return的div中插入component以及属性
  */
 traverse(ast, {
+    // 组件引入节点插入
     ImportDeclaration: function (path) {
         const tc = path.node.trailingComments
         if (tc && tc[0].value === 'import') {
-            path.insertAfter(t.expressionStatement(t.stringLiteral("A little high, little low.")));
+            children.forEach(item => {
+                path.insertAfter(
+                    /**
+                     * local参数表示本地使用的变量, imported表示实际引入的变量
+                     * importSpecifier: import { tab(imported) as hehe(local) } from "Hahaha";
+                     * importDefaultSpecifier: import tab from "Hahaha";
+                     * ImportNamespaceSpecifier: import * as tab from "Hahaha";
+                     */
+                    t.importDeclaration([t.importSpecifier(t.identifier('hehe'), t.identifier(item.name))], t.StringLiteral('Hahaha'))
+                );
+            })
         }
-    }
+    },
+
 })
+
 const out = g(ast, {
     retainLines: true,
     compact: false,
     concise: false,
     quotes: "double",
 })
-fs.writeFileSync('./output.js', JSON.stringify(out.code))
+
+fs.writeFileSync('./output.js', out.code)
