@@ -29,7 +29,7 @@ function generatorAst(src) {
     return ast
 }
 const ast = generatorAst(`./src/${type}.jsx`)
-// fs.writeFileSync('./ast.json', JSON.stringify(ast))
+fs.writeFileSync('./ast.json', JSON.stringify(ast))
 
 // 根据children获取component
 let componentAst = []
@@ -77,7 +77,13 @@ traverse(ast, {
             })
         }
     },
-
+    // 找到render方法
+    ClassMethod: function (path) {
+        const { key } = path.node
+        if (key.name === 'render') {
+            path.get('body').unshiftContainer('body', t.variableDeclaration('const', [t.variableDeclarator(t.objectPattern([t.objectProperty(t.identifier('hehe') , t.identifier('hehe'))]), t.memberExpression(t.thisExpression(), t.identifier('props')))]));
+        }
+    }
 })
 
 const out = g(ast, {

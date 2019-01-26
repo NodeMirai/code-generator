@@ -5,7 +5,9 @@ import './style.scss';
 import { tab as hehe } from "Hahaha";
 class Demo extends Component {
 
-  render() {
+  render() {const { hehe: hehe } = this.props;
+    const { hehe } = this.props;
+
     return (
       <div className='demo'>
         {this.props.content}
