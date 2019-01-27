@@ -6,11 +6,10 @@ import './style.scss'
 class Demo extends Component {
   
   render() {
-    const { hehe } = this.props
     
     return (
       <div className='demo'>
-        {this.props.content}
+        
       </div>
     )
   }

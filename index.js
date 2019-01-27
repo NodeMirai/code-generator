@@ -6,28 +6,15 @@
  * 4. 分析目标模板，将component产出节点插入
  */
 const fs = require('fs')
-const babel = require('@babel/core')
 const traverse = require('@babel/traverse').default
 const t = require('@babel/types')
 const g = require('@babel/generator').default
+const { generatorAst, parser, getAstByCode } = require('./util')
 
 const config = require('./config')
 const { type, opt, children } = config
 
-function generatorAst(src) {
-    const sourceCode = fs.readFileSync(src)
-    // 获取目标模板
-    const ast = babel.parse(sourceCode, {
-        parserOpts: {
-            sourceType: 'module',
-            plugins: [
-                'classProperties',
-                'jsx',
-            ]
-        }
-    })
-    return ast
-}
+// 拿到模板页
 const ast = generatorAst(`./src/${type}.jsx`)
 fs.writeFileSync('./ast.json', JSON.stringify(ast))
 
@@ -36,7 +23,6 @@ let componentAst = []
 children.forEach(item => {
     componentAst.push(generatorAst(`./src/component/${item.name}.jsx`))
 })
-
 componentAst.forEach((item, index) => {
     children[index].props = []
     traverse(item, {
@@ -50,8 +36,8 @@ componentAst.forEach((item, index) => {
         }
     });
 })
+// console.log(children)
 
-console.log(children)
 /**
  * 向模板中插入component
  * 1. import 
@@ -81,16 +67,37 @@ traverse(ast, {
     ClassMethod: function (path) {
         const { key } = path.node
         if (key.name === 'render') {
-            path.get('body').unshiftContainer('body', t.variableDeclaration('const', [t.variableDeclarator(t.objectPattern([t.objectProperty(t.identifier('hehe') , t.identifier('hehe'))]), t.memberExpression(t.thisExpression(), t.identifier('props')))]));
+            // 获取组件中所有defaultProps名，拼接到变量声明中
+            let attrCodeStr = ''
+
+            let childrenCode = []
+            let jsxAttrCodeStr = ''
+            let childCode = ''
+            const block = path.get('body')
+            const returnStatement = block.get('body').find(item => t.isReturnStatement(item))
+            const jsxContainer = returnStatement.get('argument')
+
+            children.forEach(item1 => {
+                jsxAttrCodeStr = ''
+                childCode = ''
+                item1.props.forEach(item2 => {
+                    attrCodeStr += item2 + ' '
+                    jsxAttrCodeStr += `${item2}={${item2}} `
+                })
+                childCode = `<${item1.name} ${jsxAttrCodeStr} />`
+                childrenCode.push(childCode)
+            })
+            
+            block.unshiftContainer('body', getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
+            jsxContainer.unshiftContainer('children', getAstByCode(childrenCode.join(' '))[0]);  // 换行符分割
+            // fs.writeFileSync('./ast.json', JSON.stringify(getAstByCode(childrenCode.join(' '))[0]))
         }
     }
 })
 
 const out = g(ast, {
-    retainLines: true,
-    compact: false,
-    concise: false,
     quotes: "double",
+    comments: false,
 })
 
 fs.writeFileSync('./output.js', out.code)
