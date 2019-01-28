@@ -14,6 +14,8 @@
 6. 组件找不到时自动引入原生组件(原生组件路径需要配置)   p1
 - 引入shelljs获取组件列表名，如果配置文件中组件名不存在则引入原生列表
 7. 为组件属性添加配置项，对属性为事件的情况提前声明方法
+8. 代码生成进度log
+9. 第三方组件库导入
 
 ## 代码重构 p1
 1. 配置分离
@@ -27,3 +29,7 @@
 - 输出
 4. 工具分离
 - 编译方法
+
+##issue
+1. 通过join方法将数组字符串变为数组时，parser解析出现问题
+- SyntaxError: unknown: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (1:8)
