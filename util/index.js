@@ -3,7 +3,13 @@ const babel = require('@babel/core')
 
 
 function generatorAst(src) {
-    const sourceCode = fs.readFileSync(src)
+    let sourceCode = ''
+    try {
+        sourceCode = fs.readFileSync(src)
+    } catch(e) {
+        // 查不到再说吧
+        console.log('error', e)
+    }
     // 获取目标模板
     return parser(sourceCode)
 }
