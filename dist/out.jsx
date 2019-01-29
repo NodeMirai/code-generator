@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import './style.scss';
-import { View } from 'react';
-import tab from './src/component';
+import Tab from './src/component';
 
-class page extends Component {
+class Page extends Component {
   render() {
     const {
       text
     } = this.props;
-    return <div className='demo'><tab text={text} />, <View />;
+    return <div className='demo'><Tab text={text} />, <View />;
         
       </div>;
   }
 
 }
 
-export default page;
+export default Page;

@@ -35,8 +35,8 @@ function generatorAstFromConfig(innerConfig, outConfig) {
     children.forEach((item, index) => {
         children[index].props = Object.assign([], children[index].props) // 确保配置文件中配置props时不被覆盖
         if (!/\$/.test(item.name)) {
-            children[index].ast = generatorAst(`${resolveComponentPath}/${item.name}.jsx`)
-            // 首字母单词转大写
+            // 首字母单词转小写, 约定组件名称全部使用小写
+            children[index].ast = generatorAst(`${resolveComponentPath}/${item.name.toLocaleLowerCase()}.jsx`)
             traverse(children[index].ast, {
                 Identifier: function (path) {
                     if (path.node.name === 'defaultProps') {
@@ -81,6 +81,8 @@ function generatorAstFromConfig(innerConfig, outConfig) {
                         );
                     }
                 })
+
+                if (nativeComponentPath === '') return
                 // 原生组件导入
                 path.insertAfter(
                     getAstByCode(`import {${nativeComponentList.join(', ')}} from '${nativeComponentPath}'`)[0]
@@ -111,6 +113,7 @@ function generatorAstFromConfig(innerConfig, outConfig) {
                         attrCodeStr += item2 + ' '
                         jsxAttrCodeStr += `${item2}={${item2}} `
                     })
+
                     childCode = `<${item1.name} ${jsxAttrCodeStr} />`
                     childrenCode.push(childCode)
                 })

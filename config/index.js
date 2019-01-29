@@ -1,7 +1,10 @@
+/**
+ * $开头表示原生标签
+ */
 const pageConfigList = [
   {
     type: 'page',
-    name: 'page',
+    name: 'Page',
     filename: 'out.jsx',
     opt: {},
     /**
@@ -12,7 +15,7 @@ const pageConfigList = [
      */
     children: [
       {
-          name: 'tab',
+          name: 'Tab',
           opt: {},
           children: []
       },
@@ -25,7 +28,7 @@ const pageConfigList = [
   },
   {
     type: 'page',
-    name: 'page',
+    name: 'Page',
     filename: 'out1.jsx',
     opt: {},
     /**
@@ -36,7 +39,7 @@ const pageConfigList = [
      */
     children: [
       {
-          name: 'tab',
+          name: 'Tab',
           opt: {},
           children: []
       },

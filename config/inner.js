@@ -7,7 +7,7 @@ const outPath = path.resolve('./dist')
 
 module.exports = {
   componentPath,
-  nativeComponentPath: 'react',
+  nativeComponentPath: '',
   resolveComponentPath,
   modelPath,
   outPath,
