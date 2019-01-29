@@ -3,14 +3,16 @@ import './style.scss';
 import { Text, Video } from 'react';
 import tab from './src/component';
 
-class Demo extends Component {
+class page extends Component {
   render() {
-    const {} = this.props;
-    return <div className='demo'><tab />, <Text />, <Video />;
+    const {
+      text
+    } = this.props;
+    return <div className='demo'><tab text={text} />, <Text />, <Video />;
         
       </div>;
   }
 
 }
 
-export default Demo;
+export default page;
