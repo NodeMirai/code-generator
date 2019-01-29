@@ -3,7 +3,7 @@ const traverse = require('@babel/traverse').default
 const g = require('@babel/generator').default
 const t = require('@babel/types')
 
-const { generatorAst, parser, getAstByCode } = require('../util')
+const { generatorAst, getAstByCode } = require('../util')
 
 function generatorAstFromConfig(innerConfig, outConfig) {
     const { type, name, filename, opt, children } = outConfig
@@ -105,7 +105,20 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         }
     })
 
-    return ast
+    return {
+        ast,
+        filename,
+    }
+}
+
+function generateAstList(innerConfig, outConfigList) {
+    // 校验配置类型
+    const astList = []
+    
+    for (let i = 0; i < outConfigList.length; i++) {
+        astList.push(generatorAstFromConfig(innerConfig, outConfigList[i]))
+    }
+    return astList
 }
 
 function output(ast, path) {
@@ -119,6 +132,6 @@ function output(ast, path) {
 }
 
 module.exports = {
-  generatorAstFromConfig,
+  generateAstList,
   output
 }

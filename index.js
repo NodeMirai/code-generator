@@ -7,11 +7,13 @@
  */
 const innerConfig = require('./config/inner')
 const config = require('./config')
-const { generatorAstFromConfig, output } = require('./src/resolve')
+const { generateAstList, output } = require('./src/resolve')
 
-const { filename } = config
 const { outPath } = innerConfig
 
-const ast = generatorAstFromConfig(innerConfig, config)
+const astList = generateAstList(innerConfig, config)
 
-output(ast, `${outPath}/${filename}`)
+for (let i = 0; i < astList.length; i++) {
+  const { ast, filename } = astList[i]
+  output(ast, `${outPath}/${filename}`)
+}
