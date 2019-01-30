@@ -50,6 +50,35 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         }
     })
 
+
+    let childCode = '|'
+    let attrCodeStr = ''
+    let jsxAttrCodeStr = ''
+    function insertChild(node) {
+        jsxAttrCodeStr = ''
+
+        // 拼接props所需属性和jsx标签属性
+        node.props.forEach(item2 => {
+            attrCodeStr += item2 + ', '
+            jsxAttrCodeStr += `${item2}={${item2}} `
+        })
+        // 根据jsx是否存在子节点属性确定拼接字符串方式
+        if (!node.children || !Array.isArray(node.children)) {
+            childCode = childCode.replace('|', `<${node.name} ${jsxAttrCodeStr} />`)
+            return childCode
+        } else {
+            childCode = childCode.replace(/(\|)/, `<${node.name} ${jsxAttrCodeStr} >$1</${node.name}>`)
+            // 传入子节点递归children
+            if (node.children.length > 0) {
+                for (let i = 0; i < node.children.length; i++) {
+                    return insertChild(node.children[i])
+                }
+            } else {
+                return childCode.replace('|', '')
+            }
+        }
+    }
+
     /**
      * 向模板中插入component
      * 1. import 
@@ -91,33 +120,23 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         },
         // render中属性声明部分与children部分
         ClassMethod: function (path) {
+            if (!children || !Array.isArray(children)) return
             const {
                 key
             } = path.node
             if (key.name === 'render') {
                 // 获取组件中所有defaultProps名，拼接到变量声明中
-                let attrCodeStr = ''
 
                 let childrenCode = []
-                let jsxAttrCodeStr = ''
-                let childCode = ''
                 const block = path.get('body')
                 const returnStatement = block.get('body').find(item => t.isReturnStatement(item))
                 const jsxContainer = returnStatement.get('argument')
 
                 children.forEach(item1 => {
-                    jsxAttrCodeStr = ''
-                    childCode = ''
-
-                    item1.props.forEach(item2 => {
-                        attrCodeStr += item2 + ' '
-                        jsxAttrCodeStr += `${item2}={${item2}} `
-                    })
-
-                    childCode = `<${item1.name} ${jsxAttrCodeStr} />`
+                    childCode = '|'
+                    childCode = insertChild(item1)
                     childrenCode.push(childCode)
                 })
-
                 block.unshiftContainer('body', getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
                 jsxContainer.unshiftContainer('children', getAstByCode(childrenCode.join())[0]); // 换行符分割
             }
