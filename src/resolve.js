@@ -51,9 +51,9 @@ function generatorAstFromConfig(innerConfig, outConfig) {
     })
 
 
-    let childCode = '|'
-    let attrCodeStr = ''
-    let jsxAttrCodeStr = ''
+    let childCode = '|'     // 每个树拼接成的组件代码片段
+    let attrCodeStr = ''    // 每个树上所有的属性节点
+    let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
     function insertChild(node) {
         jsxAttrCodeStr = ''
 
@@ -66,15 +66,13 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         if (!node.children || !Array.isArray(node.children)) {
             childCode = childCode.replace('|', `<${node.name} ${jsxAttrCodeStr} />`)
             return childCode
+        } else if (node.children.length === 0) {
+            return childCode.replace('|', '')
         } else {
             childCode = childCode.replace(/(\|)/, `<${node.name} ${jsxAttrCodeStr} >$1</${node.name}>`)
             // 传入子节点递归children
-            if (node.children.length > 0) {
-                for (let i = 0; i < node.children.length; i++) {
-                    return insertChild(node.children[i])
-                }
-            } else {
-                return childCode.replace('|', '')
+            for (let i = 0; i < node.children.length; i++) {
+                return insertChild(node.children[i])
             }
         }
     }
@@ -138,7 +136,7 @@ function generatorAstFromConfig(innerConfig, outConfig) {
                     childrenCode.push(childCode)
                 })
                 block.unshiftContainer('body', getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
-                jsxContainer.unshiftContainer('children', getAstByCode(childrenCode.join())[0]); // 换行符分割
+                jsxContainer.unshiftContainer('children', getAstByCode(childrenCode.join())[0]); 
             }
         },
         ClassDeclaration: function (path) {
