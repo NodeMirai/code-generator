@@ -4,10 +4,16 @@
       "noImplicitAny": true,
       "removeComments": true,
       "preserveConstEnums": true,
-      // "outFile": "../../built/local/tsc.js",
-      "sourceMap": true,
-      "allowJs": true,
-      "types": ["node"]   // 依赖@types/node
+      "sourceMap": false,
+      // "allowJs": true,
+      "types": ["node"],   // 依赖@types/node
+      "target": "es6",
+      "lib": [
+        "dom",
+        "es6",
+        "dom.iterable",
+        "scripthost"
+      ]
   },
   "include": [
       "src/**/*"

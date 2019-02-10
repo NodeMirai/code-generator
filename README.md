@@ -29,7 +29,7 @@
 10. 内部组件库定义支持 import {  } from ''形式，避免多行引入
 
 
-## node项目下使用ts代码重构 
+## node项目下使用ts代码重构与调试 
 1. 创建tsconfig.json，模版如下
 ```
 {
@@ -54,6 +54,9 @@
 ```
 2. 添加node项目下的类型包, 防止require等node环境下的内容无法使用
 - yarn add @types/node
+3. 划分类与接口
+4. ts下modules使用方式与es6和commonjs不同
+
 
 ## issue
 1. 通过join方法将数组字符串变为数组时，parser解析出现问题
@@ -61,3 +64,4 @@
 
 ## 优化
 1. 构造参数过多时如何处理更方便
+2. ts参数类型的重复声明问题: 声明为any后可防止属性exist问题

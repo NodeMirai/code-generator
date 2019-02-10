@@ -1,7 +1,7 @@
-const fs = require('fs')
-const traverse = require('@babel/traverse').default
-const g = require('@babel/generator').default
-const t = require('@babel/types')
+const fs = require('fs');
+import traverse from '@babel/traverse';
+import g from '@babel/generator';
+import * as t from '@babel/types';
 
 const {
     generatorAst,
@@ -42,7 +42,8 @@ function generatorAstFromConfig(innerConfig, outConfig) {
                 Identifier: function (path) {
                     if (path.node.name === 'defaultProps') {
                         const expression = path.findParent((path) => path.key === 'expression');
-                        expression.node.right.properties.forEach(item => {
+                        const right = (expression.node as t.AssignmentExpression).right as t.ObjectExpression
+                        right.properties.forEach((item: any) => {
                             children[index].props.push(item.key.name)
                         })
                     }
@@ -127,14 +128,14 @@ function generatorAstFromConfig(innerConfig, outConfig) {
             if (!children || !Array.isArray(children)) return
             const {
                 key
-            } = path.node
+            } = path.node as any
             if (key.name === 'render') {
                 // 获取组件中所有defaultProps名，拼接到变量声明中
 
                 let childrenCode = []
-                const block = path.get('body')
+                const block: any = path.get('body')
                 const returnStatement = block.get('body').find(item => t.isReturnStatement(item))
-                const jsxContainer = returnStatement.get('argument')
+                const jsxContainer: any = returnStatement.get('argument')
 
                 children.forEach(item1 => {
                     childCode = '|'
@@ -148,7 +149,7 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         ClassDeclaration: function (path) {
             path.node.id.name = name
         },
-        ExportDefaultDeclaration: function (path) {
+        ExportDefaultDeclaration: function (path: any) {
             path.node.declaration.name = name
         }
     })
@@ -178,7 +179,7 @@ function output(ast, path) {
     fs.writeFileSync(path, out.code)
 }
 
-module.exports = {
+export {
     generateAstList,
     output
 }

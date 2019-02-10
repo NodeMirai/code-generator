@@ -1,7 +1,7 @@
 /**
  * $开头表示原生标签
  */
-const pageConfigList = [
+const pageConfigList: Array<any> = [
   {
     type: 'page',
     name: 'Page',
@@ -21,7 +21,7 @@ const pageConfigList = [
           {
             name: 'Sub',
             props: [{
-              name: 'attr1',
+              name: 'attrbbb',
               value: 'test'
             }, 'attr2'],
             children: []
@@ -43,4 +43,4 @@ const pageConfigList = [
   },
 ]
 
-module.exports = pageConfigList
+export default pageConfigList

@@ -12,11 +12,11 @@ class Page extends Component {
       attr3,
       attr4
     } = this.props;
-    return <div className='demo'><Tab text={text}><Sub attr1={test} attr2={attr2} /></Tab>, <Nav title={title}><Item attr3={attr3} attr4={attr4} /></Nav>;
+    return <div className='demo'><Tab text={text}><Sub attrbbb={'test'} attr2={attr2} /></Tab>, <Nav title={title}><Item attr3={attr3} attr4={attr4} /></Nav>;
         
       </div>;
   }
 
 }
 
-export default Page;
+export default Demo;

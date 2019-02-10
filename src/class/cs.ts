@@ -3,17 +3,22 @@ interface Prop {
   value: string;
 }
 
+interface CsProps {
+  name: string;
+  propList: Array<string | Prop>;
+  children: Array<string | ComponentSource>;
+}
+
 class ComponentSource {
   name: string;
   propList: Array<string | Prop>;
   children: Array<string | ComponentSource>;
   private _astOperate: AstStrategy;  // 此处应有默认策略
 
-  constructor(props) {
-    const { name, propList, children } = props;
-    this.name = name;
-    this.propList = propList;
-    this.children = children;
+  constructor(props: CsProps) {
+    this.name = props.name;
+    this.propList = props.propList;
+    this.children = props.children;
   }
 
   set astOperate(astOperate: AstStrategy) {
@@ -23,7 +28,7 @@ class ComponentSource {
 }
 
 class ComponentSourseFactory {
-  generate(type, props) {
+  generate(type: string, props: CsProps) {
     switch(type) {
       default:
       return new ComponentSource(props);
