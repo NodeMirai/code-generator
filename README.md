@@ -45,3 +45,6 @@
 ## issue
 1. 通过join方法将数组字符串变为数组时，parser解析出现问题
 - SyntaxError: unknown: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (1:8)
+
+## 优化
+1. 构造参数过多时如何处理更方便
