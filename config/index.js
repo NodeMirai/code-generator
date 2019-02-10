@@ -20,7 +20,10 @@ const pageConfigList = [
         children: [
           {
             name: 'Sub',
-            props: ['attr1', 'attr2'],
+            props: [{
+              name: 'attr1',
+              value: 'test'
+            }, 'attr2'],
             children: []
           }
         ]

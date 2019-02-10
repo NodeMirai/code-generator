@@ -7,6 +7,9 @@
 3. 组件找不到时自动引入原生组件(原生组件路径需要配置)   
 - 通过为组件名前缀添加$来区分是否为原生组件    
 - 如果原生组件引入路径未配置则不生成引入语句
+4. props数组支持两种数据类型       done
+- 字符串时表示从props中直接获取
+- object时通过{ name, value }形式直接拼入代码(value暂时仅支持string) 
 
 ## todo
 1. 格式问题 
@@ -19,9 +22,6 @@
 - 组件名称首字母转大写
 - 数组长度
 - 对象false等
-4. props数组支持两种数据类型       p0
-- 字符串时表示从props中直接获取
-- object时通过{ name, value }形式直接拼入代码           
   
 7. 为组件属性添加配置项，对属性为事件的情况提前声明方法
 8. 代码生成进度log
@@ -42,6 +42,6 @@
 4. 工具分离
 - 编译方法
 
-##issue
+## issue
 1. 通过join方法将数组字符串变为数组时，parser解析出现问题
 - SyntaxError: unknown: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (1:8)

@@ -34,6 +34,7 @@ function generatorAstFromConfig(innerConfig, outConfig) {
     // 根据children获取component
     children.forEach((item, index) => {
         children[index].props = Object.assign([], children[index].props) // 确保配置文件中配置props时不被覆盖
+
         if (!/\$/.test(item.name)) {
             // 首字母单词转小写, 约定组件名称全部使用小写
             children[index].ast = generatorAst(`${resolveComponentPath}/${item.name.toLocaleLowerCase()}.jsx`)
@@ -55,19 +56,24 @@ function generatorAstFromConfig(innerConfig, outConfig) {
     let attrCodeStr = ''    // 每个树上所有的属性节点
     let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
     function insertChild(node) {
+        node.props = Object.assign([], node.props) // 确保配置文件中配置props时不被覆盖
         jsxAttrCodeStr = ''
 
         // 拼接props所需属性和jsx标签属性
         node.props.forEach(item2 => {
-            attrCodeStr += item2 + ', '
-            jsxAttrCodeStr += `${item2}={${item2}} `
+            if (typeof item2 === 'string') {
+                // 仅字符串类型时拼接
+                attrCodeStr += item2 + ', '
+                jsxAttrCodeStr += `${item2}={${item2}} `
+            } else {
+                const { name, value } = item2
+                jsxAttrCodeStr += `${name}={'${value}'} `
+            }
         })
         // 根据jsx是否存在子节点属性确定拼接字符串方式
-        if (!node.children || !Array.isArray(node.children)) {
+        if (!node.children || !Array.isArray(node.children) || node.children.length === 0) {
             childCode = childCode.replace('|', `<${node.name} ${jsxAttrCodeStr} />`)
             return childCode
-        } else if (node.children.length === 0) {
-            return childCode.replace('|', '')
         } else {
             childCode = childCode.replace(/(\|)/, `<${node.name} ${jsxAttrCodeStr} >$1</${node.name}>`)
             // 传入子节点递归children

@@ -5,7 +5,7 @@
  * 3. 分析component，产出ast节点
  * 4. 分析目标模板，将component产出节点插入
  */
-const innerConfig = require('./config/inner')
+const innerConfig = require('./config/path')
 const config = require('./config')
 const { generateAstList, output } = require('./src/resolve')
 
