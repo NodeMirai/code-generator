@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+      "module": "commonJs",
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      // "outFile": "../../built/local/tsc.js",
+      "sourceMap": true,
+      "allowJs": true,
+      "types": ["node"]   // 依赖@types/node
+  },
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "node_modules",
+      "**/*.spec.ts"
+  ]
+}

@@ -29,18 +29,31 @@
 10. 内部组件库定义支持 import {  } from ''形式，避免多行引入
 
 
-## 代码重构 p1
-1. 配置分离 done
-- 内部配置：组件库位置
-- 外部配置：需要组件与产出页面
-2. 常量分离
-- 代码片段：import const children
-3. 主流程分离 done
-- 配置读取
-- 配置解析
-- 输出
-4. 工具分离
-- 编译方法
+## node项目下使用ts代码重构 
+1. 创建tsconfig.json，模版如下
+```
+{
+  "compilerOptions": {
+      "module": "commonJs",
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      // "outFile": "../../built/local/tsc.js",
+      "sourceMap": true,
+      "allowJs": true,
+      "types": ["node"]   // 依赖@types/node
+  },
+  "include": [
+      "src/**/*"
+  ],
+  "exclude": [
+      "node_modules",
+      "**/*.spec.ts"
+  ]
+}
+```
+2. 添加node项目下的类型包, 防止require等node环境下的内容无法使用
+- yarn add @types/node
 
 ## issue
 1. 通过join方法将数组字符串变为数组时，parser解析出现问题
