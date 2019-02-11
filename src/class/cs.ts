@@ -1,4 +1,4 @@
-interface Prop {
+export interface Prop {
   name: string;
   value: string;
 }
@@ -6,13 +6,14 @@ interface Prop {
 interface CsProps {
   name: string;
   propList: Array<string | Prop>;
-  children: Array<string | ComponentSource>;
+  children: Array<ComponentSource>;
 }
 
-class ComponentSource {
+export class ComponentSource {
   name: string;
   propList: Array<string | Prop>;
-  children: Array<string | ComponentSource>;
+  children: Array<ComponentSource>;
+  ast: any;
   private _astOperate: AstStrategy;  // 此处应有默认策略
 
   constructor(props: CsProps) {

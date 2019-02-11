@@ -20,9 +20,9 @@ const pageConfigList: Array<any> = [
         children: [
           {
             name: 'Sub',
-            props: [{
-              name: 'attrbbb',
-              value: 'test'
+            propList: [{
+              name: 'attrbcccccb',
+              value: 'jfdlksjfkldsj'
             }, 'attr2'],
             children: []
           }
@@ -34,7 +34,7 @@ const pageConfigList: Array<any> = [
         children: [
           {
             name: 'Item',
-            props: ['attr3', 'attr4'],
+            propList: ['attr3', 'attr4'],
             children: []
           }
         ]

@@ -3,12 +3,16 @@ import traverse from '@babel/traverse';
 import g from '@babel/generator';
 import * as t from '@babel/types';
 
+import CSFactory, { ComponentSource, Prop } from './class/cs'
+
+const csFactory = new CSFactory()
+
 const {
     generatorAst,
     getAstByCode
 } = require('../util')
 
-function generatorAstFromConfig(innerConfig, outConfig) {
+function generatorAstFromConfig(innerConfig: any, outConfig: any) {
     const {
         type,
         name,
@@ -21,30 +25,42 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         resolveComponentPath,
         nativeComponentPath,
         modelPath,
-        outPath
     } = innerConfig
 
     // 拿到模板页
     const outModelPath = `${modelPath}/${name}.jsx`
     const ast = generatorAst(outModelPath)
 
+    function initForest(children: Array<ComponentSource>) {
+        // 递归终止条件
+        if (!children || children.length === 0) return
+        // 初始化每个节点对象
+        for (let i = 0; i < children.length; i++) {
+            const cs = csFactory.generate(type, children[i])
+            children[i] = cs
+            initForest(cs.children)
+        }
+    }
+    initForest(children)
+    let childForest: Array<ComponentSource> = children
+
     /** 
      * 配置解析
      */
     // 根据children获取component
-    children.forEach((item, index) => {
-        children[index].props = Object.assign([], children[index].props) // 确保配置文件中配置props时不被覆盖
-
-        if (!/\$/.test(item.name)) {
+    children.forEach((cs: ComponentSource) => {
+        cs.propList = Object.assign([], cs.propList) // 确保配置文件中配置props时不被覆盖
+        
+        if (!/\$/.test(cs.name)) {
             // 首字母单词转小写, 约定组件名称全部使用小写
-            children[index].ast = generatorAst(`${resolveComponentPath}/${item.name.toLocaleLowerCase()}.jsx`)
-            traverse(children[index].ast, {
+            cs.ast = generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
+            traverse(cs.ast, {
                 Identifier: function (path) {
                     if (path.node.name === 'defaultProps') {
-                        const expression = path.findParent((path) => path.key === 'expression');
-                        const right = (expression.node as t.AssignmentExpression).right as t.ObjectExpression
+                        const expression: any = path.findParent((path) => path.key === 'expression');
+                        const right = expression.node.right
                         right.properties.forEach((item: any) => {
-                            children[index].props.push(item.key.name)
+                            cs.propList.push(item.key.name)
                         })
                     }
                 }
@@ -56,30 +72,30 @@ function generatorAstFromConfig(innerConfig, outConfig) {
     let childCode = '|'     // 每个树拼接成的组件代码片段
     let attrCodeStr = ''    // 每个树上所有的属性节点
     let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
-    function insertChild(node) {
-        node.props = Object.assign([], node.props) // 确保配置文件中配置props时不被覆盖
+    function insertChild(cs: ComponentSource): string {
+        cs.propList = Object.assign([], cs.propList) // 确保配置文件中配置props时不被覆盖
         jsxAttrCodeStr = ''
 
         // 拼接props所需属性和jsx标签属性
-        node.props.forEach(item2 => {
-            if (typeof item2 === 'string') {
+        cs.propList.forEach((prop: string | Prop) => {
+            if (typeof prop === 'string') {
                 // 仅字符串类型时拼接
-                attrCodeStr += item2 + ', '
-                jsxAttrCodeStr += `${item2}={${item2}} `
+                attrCodeStr += prop + ', '
+                jsxAttrCodeStr += `${prop}={${prop}} `
             } else {
-                const { name, value } = item2
+                const { name, value } = prop
                 jsxAttrCodeStr += `${name}={'${value}'} `
             }
         })
         // 根据jsx是否存在子节点属性确定拼接字符串方式
-        if (!node.children || !Array.isArray(node.children) || node.children.length === 0) {
-            childCode = childCode.replace('|', `<${node.name} ${jsxAttrCodeStr} />`)
+        if (!cs.children || !Array.isArray(cs.children) || cs.children.length === 0) {
+            childCode = childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} />`)
             return childCode
         } else {
-            childCode = childCode.replace(/(\|)/, `<${node.name} ${jsxAttrCodeStr} >$1</${node.name}>`)
+            childCode = childCode.replace(/(\|)/, `<${cs.name} ${jsxAttrCodeStr} >$1</${cs.name}>`)
             // 传入子节点递归children
-            for (let i = 0; i < node.children.length; i++) {
-                return insertChild(node.children[i])
+            for (let i = 0; i < cs.children.length; i++) {
+                return insertChild(cs.children[i])
             }
         }
     }
@@ -96,9 +112,9 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         ImportDeclaration: function (path) {
             const tc = path.node.trailingComments
             if (tc && tc[0].value === 'import') {
-                let nativeComponentList = []
+                let nativeComponentList: Array<string> = []
                 // 组件库组件导入
-                children.forEach(item => {
+                childForest.forEach((item: ComponentSource) => {
                     if (item.name[0] === '$') {
                         // 原生组件使用$开头
                         item.name = item.name.slice(1)
@@ -125,21 +141,20 @@ function generatorAstFromConfig(innerConfig, outConfig) {
         },
         // render中属性声明部分与children部分
         ClassMethod: function (path) {
-            if (!children || !Array.isArray(children)) return
             const {
                 key
             } = path.node as any
             if (key.name === 'render') {
                 // 获取组件中所有defaultProps名，拼接到变量声明中
 
-                let childrenCode = []
+                let childrenCode: Array<string> = []
                 const block: any = path.get('body')
-                const returnStatement = block.get('body').find(item => t.isReturnStatement(item))
+                const returnStatement = block.get('body').find((item: any) => t.isReturnStatement(item))
                 const jsxContainer: any = returnStatement.get('argument')
 
-                children.forEach(item1 => {
+                childForest.forEach(item => {
                     childCode = '|'
-                    childCode = insertChild(item1)
+                    childCode = insertChild(item)
                     childrenCode.push(childCode)
                 })
                 block.unshiftContainer('body', getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
@@ -160,7 +175,7 @@ function generatorAstFromConfig(innerConfig, outConfig) {
     }
 }
 
-function generateAstList(innerConfig, outConfigList) {
+function generateAstList(innerConfig: any, outConfigList: any) {
     // 校验配置类型
     const astList = []
 
@@ -170,7 +185,7 @@ function generateAstList(innerConfig, outConfigList) {
     return astList
 }
 
-function output(ast, path) {
+function output(ast: any, path: string) {
     // 输出部分
     const out = g(ast, {
         quotes: "double",
