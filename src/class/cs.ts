@@ -14,6 +14,7 @@ export class ComponentSource {
   propList: Array<string | Prop>;
   children: Array<ComponentSource>;
   ast: any;
+  type: string;
   private _astOperate: AstStrategy;  // 此处应有默认策略
 
   constructor(props: CsProps) {

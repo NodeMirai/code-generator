@@ -12,38 +12,63 @@ const {
     getAstByCode
 } = require('../util')
 
-function generatorAstFromConfig(innerConfig: any, outConfig: any) {
-    const {
-        type,
-        name,
-        filename,
-        opt,
-        children
-    } = outConfig
-    const {
-        componentPath,
-        resolveComponentPath,
-        nativeComponentPath,
-        modelPath,
-    } = innerConfig
+let childCode = '|'     // 每个树拼接成的组件代码片段
+let attrCodeStr = ''    // 每个树上所有的属性节点
+let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
+function insertChild(cs: ComponentSource): string {
+    cs.propList = Object.assign([], cs.propList) // 确保配置文件中配置props时不被覆盖
+    jsxAttrCodeStr = ''
 
-    // 拿到模板页
-    const outModelPath = `${modelPath}/${name}.jsx`
-    const ast = generatorAst(outModelPath)
-
-    function initForest(children: Array<ComponentSource>) {
-        // 递归终止条件
-        if (!children || children.length === 0) return
-        // 初始化每个节点对象
-        for (let i = 0; i < children.length; i++) {
-            const cs = csFactory.generate(type, children[i])
-            children[i] = cs
-            initForest(cs.children)
+    // 拼接props所需属性和jsx标签属性
+    cs.propList.forEach((prop: string | Prop) => {
+        if (typeof prop === 'string') {
+            // 仅字符串类型时拼接
+            attrCodeStr += prop + ', '
+            jsxAttrCodeStr += `${prop}={${prop}} `
+        } else {
+            const { name, value } = prop
+            jsxAttrCodeStr += `${name}={'${value}'} `
+        }
+    })
+    // 根据jsx是否存在子节点属性确定拼接字符串方式
+    if (!cs.children || !Array.isArray(cs.children)) {
+        childCode = childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} />`)
+        return childCode
+    } if (cs.children.length === 0) {
+        childCode = childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} ></${cs.name}>`)
+        return childCode
+    } else {
+        childCode = childCode.replace(/(\|)/, `<${cs.name} ${jsxAttrCodeStr} >$1</${cs.name}>`)
+        // 传入子节点递归children
+        for (let i = 0; i < cs.children.length; i++) {
+            return insertChild(cs.children[i])
         }
     }
-    initForest(children)
-    let childForest: Array<ComponentSource> = children
+}
 
+/**
+ * 初始化森林方法
+ * @param type 
+ * @param children 
+ */
+function initForest(type: string, children: Array<ComponentSource>) {
+    // 递归终止条件
+    if (!children || children.length === 0) return
+    // 初始化每个节点对象
+    for (let i = 0; i < children.length; i++) {
+        const cs = csFactory.generate(type, children[i])
+        children[i] = cs
+        initForest(cs.type, cs.children)
+    }
+}
+
+/**
+ * 初始化森林节点中每个内部组件库的ast，并拼接好对应的defaultProps
+ * @param resolveComponentPath 
+ * @param children 
+ */
+function initChildrenAst(resolveComponentPath: string, children: Array<ComponentSource>) {
+    if (!children || children.length === 0)  return
     /** 
      * 配置解析
      */
@@ -66,39 +91,30 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
                 }
             });
         }
+        initChildrenAst(resolveComponentPath, cs.children)
     })
+}
 
+function generatorAstFromConfig(innerConfig: any, outConfig: any) {
+    const {
+        type,
+        name,
+        filename,
+        opt,
+        children
+    } = outConfig
+    const {
+        componentPath,
+        resolveComponentPath,
+        nativeComponentPath,
+        modelPath,
+    } = innerConfig
 
-    let childCode = '|'     // 每个树拼接成的组件代码片段
-    let attrCodeStr = ''    // 每个树上所有的属性节点
-    let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
-    function insertChild(cs: ComponentSource): string {
-        cs.propList = Object.assign([], cs.propList) // 确保配置文件中配置props时不被覆盖
-        jsxAttrCodeStr = ''
+    const outModelPath = `${modelPath}/${name}.jsx`
+    const ast = generatorAst(outModelPath)
 
-        // 拼接props所需属性和jsx标签属性
-        cs.propList.forEach((prop: string | Prop) => {
-            if (typeof prop === 'string') {
-                // 仅字符串类型时拼接
-                attrCodeStr += prop + ', '
-                jsxAttrCodeStr += `${prop}={${prop}} `
-            } else {
-                const { name, value } = prop
-                jsxAttrCodeStr += `${name}={'${value}'} `
-            }
-        })
-        // 根据jsx是否存在子节点属性确定拼接字符串方式
-        if (!cs.children || !Array.isArray(cs.children) || cs.children.length === 0) {
-            childCode = childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} />`)
-            return childCode
-        } else {
-            childCode = childCode.replace(/(\|)/, `<${cs.name} ${jsxAttrCodeStr} >$1</${cs.name}>`)
-            // 传入子节点递归children
-            for (let i = 0; i < cs.children.length; i++) {
-                return insertChild(cs.children[i])
-            }
-        }
-    }
+    initForest(type, children)
+    initChildrenAst(resolveComponentPath, children)
 
     /**
      * 向模板中插入component
@@ -114,7 +130,7 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
             if (tc && tc[0].value === 'import') {
                 let nativeComponentList: Array<string> = []
                 // 组件库组件导入
-                childForest.forEach((item: ComponentSource) => {
+                children.forEach((item: ComponentSource) => {
                     if (item.name[0] === '$') {
                         // 原生组件使用$开头
                         item.name = item.name.slice(1)
@@ -152,9 +168,9 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
                 const returnStatement = block.get('body').find((item: any) => t.isReturnStatement(item))
                 const jsxContainer: any = returnStatement.get('argument')
 
-                childForest.forEach(item => {
+                children.forEach((cs: ComponentSource) => {
                     childCode = '|'
-                    childCode = insertChild(item)
+                    childCode = insertChild(cs)
                     childrenCode.push(childCode)
                 })
                 block.unshiftContainer('body', getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
