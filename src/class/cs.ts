@@ -1,5 +1,7 @@
 import traverse from '@babel/traverse';
-import { generatorAst } from '../../util'
+import { AstUtilBase } from './util'
+
+const astUtilBase = new AstUtilBase()
 
 export interface Prop {
   name: string;
@@ -58,7 +60,7 @@ export class ComponentSource {
         // 如果是原生组件,则不查找defaultProps
         if (!/\$/.test(cs.name)) {
             // 首字母单词转小写, 约定组件名称全部使用小写
-            cs.ast = generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
+            cs.ast = astUtilBase.generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
             traverse(cs.ast, {
                 Identifier: function (path) {
                     if (path.node.name === 'defaultProps') {

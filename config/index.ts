@@ -21,8 +21,8 @@ const pageConfigList: Array<any> = [
           {
             name: '$div',
             propList: [{
-              name: 'attrbcccccb',
-              value: 'jfdlksjfkldsj'
+              name: 'attr1',
+              value: 'attr1-value'
             }, 'attr2'],
             children: []
           }

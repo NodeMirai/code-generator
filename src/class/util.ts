@@ -3,7 +3,7 @@ import * as babel from '@babel/core';
 
 class AstUtilBase {
 
-    generatorAst(src: string) {
+    public generatorAst(src: string) {
         let sourceCode = ''
         try {
             sourceCode = fs.readFileSync(src)

@@ -7,13 +7,18 @@
  */
 import innerConfig from './config/path';
 import config from './config';
-import { generateAstList, output } from './src/resolve';
+import { PageSource } from './src/class/ps';
 
 const { outPath } = innerConfig
 
-const astList = generateAstList(innerConfig, config)
+const astList = []
+const ps = new PageSource()
+
+for (let i = 0; i < config.length; i++) {
+  astList.push(ps.generatorAstFromConfig(innerConfig, config[i]))
+}
 
 for (let i = 0; i < astList.length; i++) {
   const { ast, filename } = astList[i]
-  output(ast, `${outPath}/${filename}`)
+  ps.output(ast, `${outPath}/${filename}`)
 }
