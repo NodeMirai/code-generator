@@ -3,20 +3,15 @@ import traverse from '@babel/traverse';
 import g from '@babel/generator';
 import * as t from '@babel/types';
 
-import CSFactory, { ComponentSource, Prop } from './class/cs'
+import { ComponentSource, Prop } from './class/cs'
+import { AstUtilBase } from '../util'
 
-const csFactory = new CSFactory()
-
-const {
-    generatorAst,
-    getAstByCode
-} = require('../util')
+const astUtilBase: AstUtilBase = new AstUtilBase()
 
 let childCode = '|'     // 每个树拼接成的组件代码片段
 let attrCodeStr = ''    // 每个树上所有的属性节点
 let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
 function insertChild(cs: ComponentSource): string {
-    cs.propList = Object.assign([], cs.propList) // 确保配置文件中配置props时不被覆盖
     jsxAttrCodeStr = ''
 
     // 拼接props所需属性和jsx标签属性
@@ -46,53 +41,15 @@ function insertChild(cs: ComponentSource): string {
     }
 }
 
-/**
- * 初始化森林方法
- * @param type 
- * @param children 
- */
-function initForest(type: string, children: Array<ComponentSource>) {
-    // 递归终止条件
-    if (!children || children.length === 0) return
-    // 初始化每个节点对象
-    for (let i = 0; i < children.length; i++) {
-        const cs = csFactory.generate(type, children[i])
-        children[i] = cs
-        initForest(cs.type, cs.children)
+function generateAstList(innerConfig: any, outConfigList: any) {
+    // 校验配置类型
+    const astList = []
+    attrCodeStr = ''
+    childCode = '|'
+    for (let i = 0; i < outConfigList.length; i++) {
+        astList.push(generatorAstFromConfig(innerConfig, outConfigList[i]))
     }
-}
-
-/**
- * 初始化森林节点中每个内部组件库的ast，并拼接好对应的defaultProps
- * @param resolveComponentPath 
- * @param children 
- */
-function initChildrenAst(resolveComponentPath: string, children: Array<ComponentSource>) {
-    if (!children || children.length === 0)  return
-    /** 
-     * 配置解析
-     */
-    // 根据children获取component
-    children.forEach((cs: ComponentSource) => {
-        cs.propList = Object.assign([], cs.propList) // 确保配置文件中配置props时不被覆盖
-        
-        if (!/\$/.test(cs.name)) {
-            // 首字母单词转小写, 约定组件名称全部使用小写
-            cs.ast = generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
-            traverse(cs.ast, {
-                Identifier: function (path) {
-                    if (path.node.name === 'defaultProps') {
-                        const expression: any = path.findParent((path) => path.key === 'expression');
-                        const right = expression.node.right
-                        right.properties.forEach((item: any) => {
-                            cs.propList.push(item.key.name)
-                        })
-                    }
-                }
-            });
-        }
-        initChildrenAst(resolveComponentPath, cs.children)
-    })
+    return astList
 }
 
 function generatorAstFromConfig(innerConfig: any, outConfig: any) {
@@ -111,10 +68,10 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
     } = innerConfig
 
     const outModelPath = `${modelPath}/${name}.jsx`
-    const ast = generatorAst(outModelPath)
+    const ast = astUtilBase.generatorAst(outModelPath)
 
-    initForest(type, children)
-    initChildrenAst(resolveComponentPath, children)
+    ComponentSource.initForest(type, children)
+    ComponentSource.initChildrenAst(resolveComponentPath, children)
 
     /**
      * 向模板中插入component
@@ -124,17 +81,19 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
      * 4. render中return的div中插入component以及属性
      */
     traverse(ast, {
-        // import模块引入部分
+        /**
+         * import模块引入部分
+         */
         ImportDeclaration: function (path) {
             const tc = path.node.trailingComments
             if (tc && tc[0].value === 'import') {
                 let nativeComponentList: Array<string> = []
                 // 组件库组件导入
-                children.forEach((item: ComponentSource) => {
-                    if (item.name[0] === '$') {
+                children.forEach((cs: ComponentSource) => {
+                    if (cs.name[0] === '$') {
                         // 原生组件使用$开头
-                        item.name = item.name.slice(1)
-                        nativeComponentList.push(item.name)
+                        cs.name = cs.name.slice(1)
+                        nativeComponentList.push(cs.name)
                     } else {
                         path.insertAfter(
                             /**
@@ -143,7 +102,7 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
                              * importDefaultSpecifier: import tab from "Hahaha";
                              * ImportNamespaceSpecifier: import * as tab from "Hahaha";
                              */
-                            getAstByCode(`import ${item.name} from '${componentPath}'`)[0]
+                            astUtilBase.getAstByCode(`import ${cs.name} from '${componentPath}'`)[0]
                         );
                     }
                 })
@@ -151,11 +110,14 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
                 if (nativeComponentPath === '') return
                 // 原生组件导入
                 path.insertAfter(
-                    getAstByCode(`import {${nativeComponentList.join(', ')}} from '${nativeComponentPath}'`)[0]
+                    astUtilBase.getAstByCode(`import {${nativeComponentList.join(', ')}} from '${nativeComponentPath}'`)[0]
                 );
             }
         },
-        // render中属性声明部分与children部分
+        /**
+         * render中属性声明部分与children部分
+         * @param path 
+         */
         ClassMethod: function (path) {
             const {
                 key
@@ -173,8 +135,8 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
                     childCode = insertChild(cs)
                     childrenCode.push(childCode)
                 })
-                block.unshiftContainer('body', getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
-                jsxContainer.unshiftContainer('children', getAstByCode(childrenCode.join())[0]); 
+                block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${attrCodeStr} } = this.props`)[0]);
+                jsxContainer.unshiftContainer('children', astUtilBase.getAstByCode(childrenCode.join())[0]); 
             }
         },
         ClassDeclaration: function (path) {
@@ -189,16 +151,6 @@ function generatorAstFromConfig(innerConfig: any, outConfig: any) {
         ast,
         filename,
     }
-}
-
-function generateAstList(innerConfig: any, outConfigList: any) {
-    // 校验配置类型
-    const astList = []
-
-    for (let i = 0; i < outConfigList.length; i++) {
-        astList.push(generatorAstFromConfig(innerConfig, outConfigList[i]))
-    }
-    return astList
 }
 
 function output(ast: any, path: string) {
