@@ -53,12 +53,12 @@
 }
 ```
 2. 添加node项目下的类型包, 防止require等node环境下的内容无法使用
-- yarn add @types/node
+- yarn add @types/node | npm i @types/node
 3. 划分类与接口
 4. ts下modules使用方式与es6和commonjs不同
 
 ## vscode调试ts下的node项目
-1. yarn add --dev typescript, yarn add --dev ts-node
+1. yarn add --dev typescript ts-node | npm i -D typescript ts-node
 2. launch.json中添加如下配置
 ```
 {
