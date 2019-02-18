@@ -1,5 +1,10 @@
+const fs = require('fs')
 import traverse from '@babel/traverse';
 import { AstUtilBase } from './util'
+import { ErrorType } from './config'
+import innerConfig from '../../config/path'
+import PsModalFactory from './psModalFactroy'
+import CodeGenerator from './codeGenerator'
 
 const astUtilBase = new AstUtilBase()
 
@@ -60,18 +65,43 @@ export class ComponentSource {
         // 如果是原生组件,则不查找defaultProps
         if (!/\$/.test(cs.name)) {
             // 首字母单词转小写, 约定组件名称全部使用小写
-            cs.ast = astUtilBase.generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
-            traverse(cs.ast, {
-                Identifier: function (path) {
-                    if (path.node.name === 'defaultProps') {
-                        const expression: any = path.findParent((path) => path.key === 'expression');
-                        const right = expression.node.right
-                        right.properties.forEach((item: any) => {
-                            cs.propList.push(item.key.name)
-                        })
-                    }
+            try {
+              cs.ast = astUtilBase.generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
+            } catch(e) {
+              switch(e.message) {
+                case ErrorType.FileNotFound:
+                /**
+                 * 组件不存在时，需要递归生成
+                 * 1. 在组件模型工厂中根据name查找对应的PageSource
+                 * 2. 如果不存在，则将该组件记录在特定文件中，以便后续添加
+                 */
+                const psModalFactory = new PsModalFactory()
+                const psModal = psModalFactory.generate(cs.name)
+                if (psModal !== undefined) {
+                  CodeGenerator.main(innerConfig, psModal)
+                } else {
+                  // 输出记录下来
+                  fs.appendFile('message.txt', `${cs.name}不在模型库中\n`, (err: Error) => {
+                    if (err) throw err;
+                    console.log('The file has been saved!');
+                  });
                 }
-            });
+                break;
+                default:
+              }
+            } finally {
+              traverse(cs.ast, {
+                  Identifier: function (path) {
+                      if (path.node.name === 'defaultProps') {
+                          const expression: any = path.findParent((path) => path.key === 'expression');
+                          const right = expression.node.right
+                          right.properties.forEach((item: any) => {
+                              cs.propList.push(item.key.name)
+                          })
+                      }
+                  }
+              });
+            }
         }
         ComponentSource.initChildrenAst(resolveComponentPath, cs.children)
     })

@@ -5,6 +5,11 @@ enum LogColor {
   LOG = 'green',
 }
 
+enum ErrorType {
+  FileNotFound = 'file is not found'
+}
+
 export {
-  LogColor
+  LogColor,
+  ErrorType,
 }

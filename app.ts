@@ -7,18 +7,9 @@
  */
 import innerConfig from './config/path';
 import config from './config';
-import { PageSource } from './src/class/ps';
-
-const { outPath } = innerConfig
-
-const astList = []
-const ps = new PageSource()
+import CodeGenerator from './src/class/codeGenerator'
 
 for (let i = 0; i < config.length; i++) {
-  astList.push(ps.generatorAstFromConfig(innerConfig, config[i]))
+  CodeGenerator.main(innerConfig, config[i])
 }
 
-for (let i = 0; i < astList.length; i++) {
-  const { ast, filename } = astList[i]
-  ps.output(ast, `${outPath}/${filename}`)
-}

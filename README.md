@@ -33,8 +33,10 @@
 - render中xxx模板生成
 - **error与exception**
 
-9. 第三方组件库导入f
+9. 第三方组件库导入
 10. 内部组件库定义支持 import {  } from ''形式，避免多行引入
+11. 组件的递归生成：获取组件位置时如果无组件，则尝试生成该组件，组件生成位置为component目录  p1
+12. ComponentSource类中添加content属性用于添加文本 p1
 
 
 ## node项目下使用ts代码重构

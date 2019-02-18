@@ -1,5 +1,6 @@
 const fs = require('fs')
 import * as babel from '@babel/core';
+import { ErrorType } from './config'
 
 class AstUtilBase {
 
@@ -8,8 +9,7 @@ class AstUtilBase {
         try {
             sourceCode = fs.readFileSync(src)
         } catch(e) {
-            // 查不到再说吧
-            console.log('error', e)
+            throw new Error(ErrorType.FileNotFound)
         }
         // 获取目标模板
         return this.parser(sourceCode)
