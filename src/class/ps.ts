@@ -6,6 +6,7 @@ import * as t from '@babel/types';
 import { ComponentSource, Prop } from '../class/cs'
 import { AstUtilBase } from './util'
 import Logger from './log'
+import { LogColor } from './config'
 
 const astUtilBase: AstUtilBase = new AstUtilBase()
 const logger: Logger = new Logger()
@@ -66,12 +67,12 @@ class PageSource {
     
         const outModelPath = `${modelPath}/${name}.jsx`
         const ast = astUtilBase.generatorAst(outModelPath)
-        logger.log('blue',`读取${name}模板ast完成`)
+        logger.log(LogColor.LOG,`${name}模板读取ast完成`)
     
         ComponentSource.initForest(type, children)
-        logger.log('blue',`初始化${filename}森林`)
+        logger.log(LogColor.LOG,`${filename}初始化森林完成`)
         ComponentSource.initChildrenAst(resolveComponentPath, children)
-        logger.log('blue',`完成${filename}森林节点中各内部组件ast初始化`)
+        logger.log(LogColor.LOG,`${filename}完成森林节点中各内部组件ast初始化完成`)
     
         /**
          * 向模板中插入component
@@ -106,14 +107,14 @@ class PageSource {
                             );
                         }
                     })
-                    logger.log('blue',`${filename}内部组件import代码生成完毕`)
+                    logger.log(LogColor.LOG,`${filename}内部组件import代码生成完毕`)
 
                     if (nativeComponentPath === '') return
                     // 原生组件导入
                     path.insertAfter(
                         astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)[0]
                     );
-                    logger.log('blue',`${filename}原生组件import代码生成完毕`)
+                    logger.log(LogColor.LOG,`${filename}原生组件import代码生成完毕`)
                 }
             },
             /**
@@ -137,9 +138,9 @@ class PageSource {
                         childrenCode.push(this.childCode)
                     })
                     block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${this.attrCodeStr} } = this.props`)[0]);
-                    logger.log('blue',`${filename}中render内部props声明完成`)
+                    logger.log(LogColor.LOG,`${filename}中render内部props声明完成`)
                     jsxContainer.unshiftContainer('children', astUtilBase.getAstByCode(childrenCode.join())[0]); 
-                    logger.log('blue',`${filename}中render内部模板声明完成`)
+                    logger.log(LogColor.LOG,`${filename}中render内部模板声明完成`)
                 }
             },
             ClassDeclaration: function (path) {

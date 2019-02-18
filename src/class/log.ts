@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
 const log = console.log.bind(this)
-
+const chalkTmp = chalk as any
 class Logger {
   private _log: Function = log
   
@@ -10,7 +10,7 @@ class Logger {
   }
 
   log(color: string, content: string) {
-    this._log(chalk[color](content))
+    this._log(chalkTmp[color](content))
   }
 }
 
