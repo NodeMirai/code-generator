@@ -9,7 +9,8 @@ class Logger {
   }
 
   log(color: string, content: string) {
-    log(chalk[color](content))
+    console.log(color)
+    this._log(chalk[color](content))
   }
 }
 
