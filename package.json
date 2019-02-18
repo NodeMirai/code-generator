@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/babel__core": "^7.0.4",
     "@types/node": "^10.12.26",
+    "chalk": "^2.4.2",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3"
   }

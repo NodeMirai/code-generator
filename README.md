@@ -24,7 +24,15 @@
 4. 通过为组件名前缀添加$来区分是否为原生组件    该方式会导致生成的标签需要处理$符号的问题，还需改良
  
 7. 为组件属性添加配置项，对属性为事件的情况提前声明方法
-8. 代码生成进度log
+8. 代码生成进度log所需记录部分: npm install -D chalk | yarn add --dev chalk
+- 读取xx模版ast
+- 初始化xx森林
+- 每个xx节点生成ast
+- import引入xxx
+- render中xxx属性生成
+- render中xxx模板生成
+- **error与exception**
+
 9. 第三方组件库导入f
 10. 内部组件库定义支持 import {  } from ''形式，避免多行引入
 

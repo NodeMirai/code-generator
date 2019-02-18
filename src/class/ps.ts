@@ -64,9 +64,12 @@ class PageSource {
     
         const outModelPath = `${modelPath}/${name}.jsx`
         const ast = astUtilBase.generatorAst(outModelPath)
+        chalk.blue(`读取${name}模板ast完成`)
     
         ComponentSource.initForest(type, children)
+        chalk.blue(`初始化${filename}森林`)
         ComponentSource.initChildrenAst(resolveComponentPath, children)
+        chalk.blue(`完成${filename}森林节点中各内部组件ast初始化`)
     
         /**
          * 向模板中插入component
@@ -82,7 +85,7 @@ class PageSource {
             ImportDeclaration: function (path) {
                 const tc = path.node.trailingComments
                 if (tc && tc[0].value === 'import') {
-                    let nativeComponentList = new Set()
+                    let nativeComponentList: Set<string> = new Set()
                     // 组件库组件导入
                     children.forEach((cs: ComponentSource) => {
                         if (cs.name[0] === '$') {
@@ -101,13 +104,14 @@ class PageSource {
                             );
                         }
                     })
-    
+                    chalk.blue(`${filename}内部组件import代码生成完毕`)
+
                     if (nativeComponentPath === '') return
-                    
                     // 原生组件导入
                     path.insertAfter(
                         astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)[0]
                     );
+                    chalk.blue(`${filename}原生组件import代码生成完毕`)
                 }
             },
             /**
@@ -120,7 +124,6 @@ class PageSource {
                 } = path.node as any
                 if (key.name === 'render') {
                     // 获取组件中所有defaultProps名，拼接到变量声明中
-    
                     let childrenCode: Array<string> = []
                     const block: any = path.get('body')
                     const returnStatement = block.get('body').find((item: any) => t.isReturnStatement(item))
@@ -132,7 +135,9 @@ class PageSource {
                         childrenCode.push(this.childCode)
                     })
                     block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${this.attrCodeStr} } = this.props`)[0]);
+                    chalk.blue(`${filename}中render内部props声明完成`)
                     jsxContainer.unshiftContainer('children', astUtilBase.getAstByCode(childrenCode.join())[0]); 
+                    chalk.blue(`${filename}中render内部模板声明完成`)
                 }
             },
             ClassDeclaration: function (path) {
