@@ -17,6 +17,7 @@ interface CsProps {
   name: string;
   propList: Array<string | Prop>;
   children: Array<ComponentSource>;
+  content: string;
 }
 
 class ComponentSourseFactory {
@@ -36,12 +37,14 @@ export class ComponentSource {
   children: Array<ComponentSource>;
   ast: any;
   type: string;
+  content: string;
   private _astOperate: AstStrategy;  // 此处应有默认策略
 
   constructor(props: CsProps) {
     this.name = props.name;
     this.propList = props.propList;
     this.children = props.children;
+    this.content = props.content
   }
 
   set astOperate(astOperate: AstStrategy) {
@@ -81,7 +84,7 @@ export class ComponentSource {
                   CodeGenerator.main(innerConfig, psModal)
                 } else {
                   // 输出记录下来
-                  fs.appendFile('message.txt', `${cs.name}不在模型库中\n`, (err: Error) => {
+                  fs.appendFile(innerConfig.modalLog, `${cs.name}不在模型库中\n`, (err: Error) => {
                     if (err) throw err;
                     console.log('The file has been saved!');
                   });

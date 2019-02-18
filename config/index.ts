@@ -15,32 +15,10 @@ const pageConfigList: Array<any> = [
      */
     children: [
       {
-        name: 'Haha',
+        name: 'HEHE',
         opt: {},
-        children: []
+        content: '测试一下content'
       },
-      {
-        name: 'Hehe',
-        opt: {},
-        children: []
-      }
-      /* {
-        name: '$View',
-        opt: {},
-        children: []
-      },
-      {
-        name: '$Input',
-        opt: {},
-      },
-      {
-        name: '$Input',
-        opt: {},
-      },
-      {
-        name: '$Button',
-        opt: {},
-      }, */
     ],
   },
 ]

@@ -8,6 +8,7 @@ const modal: any = {
       {
         name: '$div',
         opt: {},
+        content: '测试一下content'
       }
     ],
   },

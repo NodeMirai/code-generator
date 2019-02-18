@@ -35,11 +35,11 @@ class PageSource {
             }
         })
         // 根据jsx是否存在子节点属性确定拼接字符串方式
-        if (!cs.children || !Array.isArray(cs.children)) {
+        if ((!cs.children || !Array.isArray(cs.children)) && !cs.content) {
             this.childCode = this.childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} />`)
             return this.childCode
-        } if (cs.children.length === 0) {
-            this.childCode = this.childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} ></${cs.name}>`)
+        } if (cs.content || (cs.children && cs.children.length === 0) ) {
+            this.childCode = this.childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} >${cs.content}</${cs.name}>`)
             return this.childCode
         } else {
             this.childCode = this.childCode.replace(/(\|)/, `<${cs.name} ${jsxAttrCodeStr} >$1</${cs.name}>`)

@@ -3,13 +3,13 @@ import innerConfig from '../../config/path';
 import { PageSource } from './ps'
 import Logger from './log'
 
-const { outPath } = innerConfig
+const { outPath, modalLog } = innerConfig
 const logger = new Logger()
 
 class CodeGenerator {
   public static main(innerConfig: any, config: any): void {
     // 删除输出文件
-    fs.unlinkSync('message.txt')
+    if (fs.existsSync(modalLog)) fs.unlinkSync(modalLog)
     const ps = new PageSource()
     const { ast, filename } = ps.generatorAstFromConfig(innerConfig, config)
     ps.output(ast, `${outPath}/${filename}`)

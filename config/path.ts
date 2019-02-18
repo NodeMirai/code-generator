@@ -11,4 +11,5 @@ export default {
   resolveComponentPath,
   modelPath,
   outPath,
+  modalLog: 'modalLog.txt'
 }
