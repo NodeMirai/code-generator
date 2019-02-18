@@ -17,7 +17,7 @@
   },
   "include": [
       "src/**/*",
-      "src/class/chalk.d.ts"
+      "src/class/dts/chalk.d.ts"
   ],
   "exclude": [
       "node_modules",
