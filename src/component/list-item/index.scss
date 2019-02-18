@@ -1,0 +1,48 @@
+@import '@styles/common';
+
+$padding: 40px;
+$notice: #FF5C46;
+
+.list-item {
+  padding: 0 $padding;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-size-normal;
+  color: $primary-color;
+}
+
+.right-notice {
+  border: 1px solid $notice;
+  text-align: center;
+  font-size: $font-size-sm-x;
+  color: $notice;
+  padding: 0 6px;
+  line-height: normal;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.right-text {
+  margin-left: 10px;
+}
+
+.del {
+  text-decoration: line-through;
+}
+
+.n {
+  line-height: 68px;
+}
+
+.nl {
+  line-height: 100px;
+}
+
+.l {
+  line-height: 100px;
+  font-weight: 600;
+}

@@ -1,0 +1,27 @@
+@import  '@styles/common.scss';
+
+$padding: 40px;
+
+.picker-item {
+  display: flex;
+  padding:0 $padding;
+  align-items: center;
+  justify-content: space-between;
+  color: $primary-color;
+  line-height: 1;
+  height: 114px;
+}
+
+.picker-title {
+  font-size: 34px;
+  font-weight: 600;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.selected {
+  font-size: 28px;
+}

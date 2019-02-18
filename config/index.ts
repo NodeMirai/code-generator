@@ -5,7 +5,7 @@ const pageConfigList: Array<any> = [
   {
     type: 'page',
     name: 'Page',
-    filename: 'out.jsx',
+    filename: 'register.jsx',
     opt: {},
     /**
      * 组件分三类
@@ -15,29 +15,21 @@ const pageConfigList: Array<any> = [
      */
     children: [
       {
-        name: 'Tab',
+        name: '$View',
         opt: {},
-        children: [
-          {
-            name: '$div',
-            propList: [{
-              name: 'attr1',
-              value: 'attr1-value'
-            }, 'attr2'],
-            children: []
-          }
-        ]
+        children: []
       },
       {
-        name: 'Nav',
+        name: '$Input',
         opt: {},
-        children: [
-          {
-            name: '$div',
-            propList: ['attr3', 'attr4'],
-            children: []
-          }
-        ]
+      },
+      {
+        name: '$Input',
+        opt: {},
+      },
+      {
+        name: '$Button',
+        opt: {},
       },
     ],
   },

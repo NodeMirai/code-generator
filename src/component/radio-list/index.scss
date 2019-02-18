@@ -1,0 +1,26 @@
+$r: 44px;
+
+.radio-list {
+    .radio {
+        font-size: 30px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        &__text {
+            color: #666666;
+        }
+        &--unselect, &--selected {
+            margin-right: 20px;
+        }
+        &--unselect {
+            width: $r;
+            height: $r;
+            border: 1px solid #C9C9C9;
+            border-radius: 50%;
+        }
+        &--selected {
+            width: $r;
+            height: $r;
+        }
+    }
+}

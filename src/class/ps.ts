@@ -82,13 +82,13 @@ class PageSource {
             ImportDeclaration: function (path) {
                 const tc = path.node.trailingComments
                 if (tc && tc[0].value === 'import') {
-                    let nativeComponentList: Array<string> = []
+                    let nativeComponentList = new Set()
                     // 组件库组件导入
                     children.forEach((cs: ComponentSource) => {
                         if (cs.name[0] === '$') {
                             // 原生组件使用$开头
                             cs.name = cs.name.slice(1)
-                            nativeComponentList.push(cs.name)
+                            nativeComponentList.add(cs.name)
                         } else {
                             path.insertAfter(
                                 /**
@@ -103,9 +103,10 @@ class PageSource {
                     })
     
                     if (nativeComponentPath === '') return
+                    
                     // 原生组件导入
                     path.insertAfter(
-                        astUtilBase.getAstByCode(`import {${nativeComponentList.join(', ')}} from '${nativeComponentPath}'`)[0]
+                        astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)[0]
                     );
                 }
             },

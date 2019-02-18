@@ -5,9 +5,9 @@
  * 3. 分析component，产出ast节点
  * 4. 分析目标模板，将component产出节点插入
  */
-import innerConfig from '../config/path';
-import config from '../config';
-import { PageSource } from './class/ps';
+import innerConfig from './config/path';
+import config from './config';
+import { PageSource } from './src/class/ps';
 
 const { outPath } = innerConfig
 
