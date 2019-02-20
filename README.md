@@ -1,4 +1,4 @@
-# AstGenerator
+# CodeGenerator
 辅助CodeGenerator实现Ast节点生成操作
 
 ## feature
@@ -10,6 +10,7 @@
 - 字符串时表示从props中直接获取
 - object时通过{ name, value }形式直接拼入代码(value暂时仅支持string) 
 5. 组件的递归生成：获取组件位置时如果无组件，则尝试生成该组件，组件生成位置为component目录
+6. ComponentSource类中添加content属性用于添加文本
 
 ## todo
 1. 格式问题 
@@ -36,8 +37,9 @@
 
 9. 第三方组件库导入
 10. 内部组件库定义支持 import {  } from ''形式，避免多行引入
-12. ComponentSource类中添加content属性用于添加文本 p1
-
+11. **生成的页面可以实时预览**
+- webpack打包多页面项目
+- webpack-dev-server提供访问页面服务，且必须无缓存
 
 ## node项目下使用ts代码重构
 1. 创建tsconfig.json，模版如下

@@ -23,6 +23,7 @@ class PageSource {
     insertChild(cs: ComponentSource): string {
         let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
     
+        if (cs.name[0] === '$') cs.name = cs.name.slice(1)
         // 拼接props所需属性和jsx标签属性
         cs.propList.forEach((prop: string | Prop) => {
             if (typeof prop === 'string') {

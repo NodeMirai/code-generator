@@ -16,6 +16,8 @@
       ]
   },
   "include": [
+      "app.ts",
+      "webpack.ts",
       "src/**/*",
       "src/class/dts/chalk.d.ts"
   ],
