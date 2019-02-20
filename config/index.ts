@@ -1,8 +1,8 @@
 const pageModalMap = {
-  pageRender: 'PageRender',
-  page: 'page'
+  pageRender: 'PageRender.jsx',
+  page: 'page.jsx'
 }
-const pageModal = pageModalMap['pageRender']
+const modal = pageModalMap['pageRender']
 
 /**
  * $开头表示原生标签
@@ -10,15 +10,9 @@ const pageModal = pageModalMap['pageRender']
 const pageConfigList: Array<any> = [
   {
     type: 'page',
-    name: pageModal,
-    filename: 'test1.jsx',
+    modal,
+    filename: 'test1',
     opt: {},
-    /**
-     * 组件分三类
-     * 1. 原生组件
-     * 2. 内部组件
-     * 3. 第三方组件库
-     */
     children: [
       {
         name: '$div',
@@ -27,17 +21,11 @@ const pageConfigList: Array<any> = [
       },
     ],
   },
-  {
+  /* {
     type: 'page',
     name: pageModal,
     filename: 'test2.jsx',
     opt: {},
-    /**
-     * 组件分三类
-     * 1. 原生组件
-     * 2. 内部组件
-     * 3. 第三方组件库
-     */
     children: [
       {
         name: '$div',
@@ -45,7 +33,7 @@ const pageConfigList: Array<any> = [
         content: '测试一下content'
       },
     ],
-  },
+  }, */
 ]
 
 export default pageConfigList

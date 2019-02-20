@@ -54,7 +54,7 @@ class PageSource {
     generatorAstFromConfig(innerConfig: any, outConfig: any) {
         const {
             type,
-            name,
+            modal,
             filename,
             opt,
             children
@@ -66,9 +66,9 @@ class PageSource {
             modelPath,
         } = innerConfig
     
-        const outModelPath = `${modelPath}/${name}.jsx`
+        const outModelPath = `${modelPath}/${modal}`
         const ast = astUtilBase.generatorAst(outModelPath)
-        logger.log(LogColor.LOG,`${name}模板读取ast完成`)
+        logger.log(LogColor.LOG,`${modal}模板读取ast完成`)
     
         ComponentSource.initForest(type, children)
         logger.log(LogColor.LOG,`${filename}初始化森林完成`)
@@ -82,6 +82,7 @@ class PageSource {
          * 3. const 结构语句
          * 4. render中return的div中插入component以及属性
          */
+        const PageName = filename[0].toUpperCase() + filename.slice(1)
         traverse(ast, {
             /**
              * import模块引入部分
@@ -145,10 +146,17 @@ class PageSource {
                 }
             },
             ClassDeclaration: function (path) {
-                path.node.id.name = name
+                path.node.id.name = PageName
             },
             ExportDefaultDeclaration: function (path: any) {
-                path.node.declaration.name = name
+                path.node.declaration.name = PageName
+            },
+            CallExpression: (path) => {
+                const callee: any = path.node.callee
+                if (callee.object && callee.object.name === 'ReactDOM') {
+                    let argument: any = path.node.arguments[0]
+                    argument.openingElement.name.name = PageName
+                }
             }
         })
     
