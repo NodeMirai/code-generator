@@ -4,7 +4,6 @@
  * 2. 使用webpack-dev-server
  */
 import path = require('path')
-import webpack = require('webpack')
 import * as shell from 'shelljs'
 import HtmlWebpackPlugin = require('html-webpack-plugin') 
 
@@ -24,13 +23,18 @@ shell.ls('*.jsx').forEach(filename => {
   )
 })
 
-const config: webpack.Configuration = {
+const config: any = {
   devtool: 'source-map',
   mode: 'development',
   entry,
   output: {
     path: path.resolve('../build'),
     filename: '[name].js'
+  },
+  devServer: {
+    contentBase: path.join(__dirname, '../build'),
+    compress: true,
+    port: 9000
   },
   module: {
     rules: [

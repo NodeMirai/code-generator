@@ -21,10 +21,10 @@ const pageConfigList: Array<any> = [
       },
     ],
   },
-  /* {
+  {
     type: 'page',
-    name: pageModal,
-    filename: 'test2.jsx',
+    modal,
+    filename: 'test2',
     opt: {},
     children: [
       {
@@ -33,7 +33,7 @@ const pageConfigList: Array<any> = [
         content: '测试一下content'
       },
     ],
-  }, */
+  },
 ]
 
 export default pageConfigList
