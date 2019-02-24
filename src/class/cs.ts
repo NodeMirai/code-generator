@@ -39,6 +39,7 @@ export class ComponentSource {
   ast: any;
   type: string;
   content: string;
+  childCode: string = '|';
   private _astOperate: AstStrategy;  // 此处应有默认策略
 
   constructor(props: CsProps) {
