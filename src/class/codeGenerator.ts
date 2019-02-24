@@ -4,7 +4,6 @@ import { PageSource } from './ps'
 import Logger from './log'
 
 const { outPath, modalLog } = innerConfig
-const logger = new Logger()
 
 class CodeGenerator {
   public static main(innerConfig: any, config: any): void {
@@ -12,8 +11,7 @@ class CodeGenerator {
     if (fs.existsSync(modalLog)) fs.unlinkSync(modalLog)
     const ps = new PageSource()
     const { ast, filename } = ps.generatorAstFromConfig(innerConfig, config)
-    ps.output(ast, `${outPath}/${filename}.jsx`)
-    logger.log('yellow', `${filename}已生成到${outPath}`)
+    ps.output(ast, outPath, filename)
   }
 }
 

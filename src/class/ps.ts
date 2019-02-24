@@ -32,7 +32,7 @@ class PageSource {
                 jsxAttrCodeStr += `${prop}={${prop}} `
             } else {
                 const { name, value } = prop
-                jsxAttrCodeStr += `${name}={'${value}'} `
+                jsxAttrCodeStr += `${name}='${value}' `
             }
         })
         // 根据jsx是否存在子节点属性确定拼接字符串方式
@@ -55,7 +55,7 @@ class PageSource {
         const {
             type,
             modal,
-            filename,
+            name,
             opt,
             children
         } = outConfig
@@ -71,9 +71,9 @@ class PageSource {
         logger.log(LogColor.LOG,`${modal}模板读取ast完成`)
     
         ComponentSource.initForest(type, children)
-        logger.log(LogColor.LOG,`${filename}初始化森林完成`)
+        logger.log(LogColor.LOG,`${name}初始化森林完成`)
         ComponentSource.initChildrenAst(resolveComponentPath, children)
-        logger.log(LogColor.LOG,`${filename}完成森林节点中各内部组件ast初始化完成`)
+        logger.log(LogColor.LOG,`${name}完成森林节点中各内部组件ast初始化完成`)
     
         /**
          * 向模板中插入component
@@ -82,7 +82,7 @@ class PageSource {
          * 3. const 结构语句
          * 4. render中return的div中插入component以及属性
          */
-        const PageName = filename[0].toUpperCase() + filename.slice(1)
+        const PageName = name[0].toUpperCase() + name.slice(1)
         traverse(ast, {
             /**
              * import模块引入部分
@@ -109,14 +109,14 @@ class PageSource {
                             );
                         }
                     })
-                    logger.log(LogColor.LOG,`${filename}内部组件import代码生成完毕`)
+                    logger.log(LogColor.LOG,`${name}内部组件import代码生成完毕`)
 
                     if (nativeComponentPath === '') return
                     // 原生组件导入
                     path.insertAfter(
                         astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)[0]
                     );
-                    logger.log(LogColor.LOG,`${filename}原生组件import代码生成完毕`)
+                    logger.log(LogColor.LOG,`${name}原生组件import代码生成完毕`)
                 }
             },
             /**
@@ -140,9 +140,9 @@ class PageSource {
                         childrenCode.push(this.childCode)
                     })
                     block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${this.attrCodeStr} } = this.props`)[0]);
-                    logger.log(LogColor.LOG,`${filename}中render内部props声明完成`)
+                    logger.log(LogColor.LOG,`${name}中render内部props声明完成`)
                     jsxContainer.unshiftContainer('children', astUtilBase.getAstByCode(childrenCode.join())[0]); 
-                    logger.log(LogColor.LOG,`${filename}中render内部模板声明完成`)
+                    logger.log(LogColor.LOG,`${name}中render内部模板声明完成`)
                 }
             },
             ClassDeclaration: function (path) {
@@ -162,17 +162,27 @@ class PageSource {
     
         return {
             ast,
-            filename,
+            name,
         }
     }
 
-    output(ast: any, path: string) {
+    output(ast: any, path: string, name: string) {
         // 输出部分
         const out = g(ast, {
             quotes: "double",
             comments: false,
         })
-        fs.writeFileSync(path, out.code)
+        const dirPath = path + '/' + name
+        fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
+            // if (err) throw err 文件夹存在的情况下删除文件重建
+            fs.writeFile(dirPath + '/index.jsx', out.code, (err: Error) => {
+                if (err) throw err
+                logger.log('yellow', `${name}已生成到${path}`)
+            })
+            fs.writeFile(dirPath + '/index.scss', '', (err: Error) => {
+                if (err) throw err
+            })
+        })
     }
 }
 

@@ -17,6 +17,6 @@ class Demo extends Component {
 }
 
 const container = document.createElement('div')
-const body = document.getElementsByTagName('body')[0];
+const body = document.getElementsByTagName('body')[0]
 body.appendChild(container)
-ReactDOM.render(<Demo />, container);
+ReactDOM.render(<Demo />, container)

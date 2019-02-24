@@ -13,14 +13,15 @@ export interface Prop {
   value: string;
 }
 
-interface CsProps {
+export interface CsProps {
   name: string;
   propList: Array<string | Prop>;
-  children: Array<ComponentSource>;
-  content: string;
+  children?: Array<ComponentSource>;
+  content?: string;
 }
 
 class ComponentSourseFactory {
+
   generate(type: string, props: CsProps) {
     switch(type) {
       default:

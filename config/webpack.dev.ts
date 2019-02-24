@@ -12,13 +12,12 @@ const entry: any = {}
 const htmlPluginList: Array<HtmlWebpackPlugin> = []
 
 shell.cd(outputPath)
-shell.ls('*.jsx').forEach(filename => {
-  const name = filename.slice(0, -4)
-  entry[name] = outputPath + '/' + filename
+shell.ls().forEach(filename => {
+  entry[filename] = outputPath + '/' + filename + '/index.jsx'
   htmlPluginList.push(
     new HtmlWebpackPlugin({
-      filename: name + '.html',
-      chunks: [name]
+      filename: 'index.html',
+      chunks: [filename]
     })
   )
 })
