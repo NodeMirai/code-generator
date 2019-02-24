@@ -4,24 +4,30 @@ const pageModalMap = {
 }
 const modal = pageModalMap['pageRender']
 
-interface pageConfig {
+interface PageConfig {
   type?: string
-  modal?: string
-  name: string
+  modal: string
+  filename: string
   opt?: object
-  propList: Array<any>|string
-  children?: Array<pageConfig>
+  propList?: Array<any>|string
+  children?: Array<ComponentConfig>
 }
 
+interface ComponentConfig {
+  name: string
+  propList?: Array<object>
+  content?: string
+  children?: Array<ComponentConfig>
+}
 
 /**
- * $开头表示原生标签
+ * 层级过多时可读性很差，不建议组件层级过多
  */
-const pageConfigList: Array<pageConfig> = [
+const pageConfigList: Array<PageConfig> = [
   {
     type: 'page',
     modal,
-    name: 'ImgText',
+    filename: 'imgText',
     opt: {},
     children: [
       {
