@@ -31,7 +31,7 @@ const pageConfigList: Array<PageConfig> = [
     opt: {},
     children: [
       {
-        name: '$image',
+        name: '$img',
         propList: [
           {
             name: 'className',

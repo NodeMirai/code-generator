@@ -57,6 +57,7 @@ class PageSource {
             type,
             modal,
             filename,
+            stylename,
             opt,
             children
         } = outConfig
@@ -162,24 +163,32 @@ class PageSource {
         return {
             ast,
             filename,
+            stylename
         }
     }
 
-    output(ast: any, path: string, filename: string) {
+    output(ast: any, path: any) {
+        const { stylePath, outPath, filename, stylename } = path
         // 输出部分
         const out = g(ast, {
             quotes: "double",
             comments: false,
         })
-        const dirPath = path + '/' + filename
+        const dirPath = outPath + '/' + filename
+        // 待整理
         fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
             // if (err) throw err 文件夹存在的情况下删除文件重建
             fs.writeFile(dirPath + '/index.jsx', out.code, (err: Error) => {
                 if (err) throw err
-                logger.log('yellow', `${filename}已生成到${path}`)
+                logger.log('yellow', `${filename}已生成到${outPath}`)
             })
-            fs.writeFile(dirPath + '/index.scss', '', (err: Error) => {
+
+            const styleFilename = stylename || 'style.scss'
+            fs.readFile(stylePath + '/' + styleFilename, 'utf-8', (err: Error, data: string) => {
                 if (err) throw err
+                fs.writeFile(dirPath + '/style.scss', data, (err: Error) => {
+                    if (err) throw err
+                })
             })
         })
     }
