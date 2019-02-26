@@ -1,0 +1,54 @@
+//## 主题颜色
+
+//** 主色：用于按钮、重点突出文本等
+$primary-color: #222222;
+//** 辅色：用于重点提示信息文本等
+$notice-color: #ff9d17;
+//** 辅色：用于订单状态显示等
+$info-color: #00935f;
+// $warning-color: yellow;
+// $danger-color: red;
+
+//## 字体颜色梯度
+
+//** 标题
+$font-color-lg: #222;
+$font-color-primary:#222;
+//** 正文二级文本状态
+$font-color-normal: #666;
+//** 辅色：用于三级文本，不重要提示信息等
+$font-color-sm: #999;
+//** 辅色：用于输入说明文本
+$font-color-sm-x: #ccc;
+
+// $px: 2px;
+//## 常用字体大小梯度
+
+//** 用于各栏目标题、弹窗标题、按钮文本等
+$font-size-lg-x: 36px;
+//** 用于商品标题、表单输入文本等
+$font-size-lg: 32px;
+$font-size-primary:32px;
+//** 用于正文、二级文本等
+$font-size-normal: 28px;
+//** 用于三级文本
+$font-size-sm: 24px;
+//** 用于标签、提示信息文本等
+$font-size-sm-x: 20px;
+
+//## 间隙梯度
+//==目前来看间隙就是5的倍数和2的倍数遇到模糊的尽量像这俩个标准靠拢
+
+// 圆角梯度
+// $border-radius-lg: 12 * $px;
+// $border-radius-normal: 8 * $px;
+// $border-radius-sm: 4 * $px;
+
+//** 1像素边线颜色
+$border-color-1px: #ECECEC;
+
+//** view标签背景色
+$bg-color-view: #FFF;
+
+//** 页面容器背景色
+$bg-color-wrap: #F5F5F5;
