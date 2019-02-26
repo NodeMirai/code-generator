@@ -59,6 +59,7 @@ class PageSource {
             modal,
             filename,
             stylename,
+            className,
             opt,
             children
         } = outConfig
@@ -72,7 +73,7 @@ class PageSource {
         const outModelPath = `${modelPath}/${modal}`
         const ast = astUtilBase.generatorAst(outModelPath)
         logger.log(LogColor.LOG,`${modal}模板读取ast完成`)
-    
+        
         ComponentSource.initForest(type, children)
         logger.log(LogColor.LOG,`${filename}初始化森林完成`)
         ComponentSource.initChildrenAst(resolveComponentPath, children)
@@ -135,8 +136,10 @@ class PageSource {
                     let childrenCode: Array<string> = []
                     const block: any = path.get('body')
                     const returnStatement = block.get('body').find((item: any) => t.isReturnStatement(item))
-                    const jsxContainer: any = returnStatement.get('argument')
-    
+                    const jsxContainer = returnStatement.get('argument')
+                    const classNameNode = jsxContainer.node.openingElement.attributes.find((item: any) => t.isJSXAttribute(item))
+
+                    if (className) classNameNode.value.value = className
                     children.forEach((cs: ComponentSource) => {
                         childrenCode.push(this.insertChild(cs))
                     })

@@ -9,6 +9,7 @@ interface PageConfig {
   modal: string
   filename: string
   opt?: object
+  className?: string
   propList?: Array<any>|string
   children?: Array<ComponentConfig>
 }
@@ -28,6 +29,7 @@ const pageConfigList: Array<PageConfig> = [
     type: 'page',
     modal,
     filename: 'imgText',
+    className: 'p10',
     opt: {},
     children: [
       {
