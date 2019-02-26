@@ -13,17 +13,21 @@ const htmlPluginList: Array<HtmlWebpackPlugin> = []
 
 shell.cd(outputPath)
 shell.ls().forEach(filename => {
-  entry[filename] = outputPath + '/' + filename + '/index.jsx'
+  entry[filename+'/'+filename] = outputPath + '/' + filename + '/index.jsx'
   htmlPluginList.push(
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      chunks: [filename]
+      filename: filename + '/index.html',
+      chunks: [filename],
+      template: path.resolve(__dirname, './index.ejs'),
+      templateParameters: {
+        js: filename,
+      }
     })
   )
 })
 
 const config: any = {
-  devtool: 'source-map',
+  devtool: 'eval-source-map',
   mode: 'development',
   entry,
   output: {
@@ -33,7 +37,8 @@ const config: any = {
   devServer: {
     contentBase: path.join(__dirname, '../build'),
     compress: true,
-    port: 9000
+    port: 9000,
+    // writeToDisk: true,
   },
   module: {
     rules: [
@@ -53,6 +58,7 @@ const config: any = {
           },
         ],
       },
+      { test: /\.ejs$/, loader: 'ejs-loader' },
     ],
   },
   plugins: [
