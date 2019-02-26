@@ -38,7 +38,7 @@ const config: any = {
     contentBase: path.join(__dirname, '../build'),
     compress: true,
     port: 9000,
-    writeToDisk: true,
+    // writeToDisk: true,
   },
   module: {
     rules: [
