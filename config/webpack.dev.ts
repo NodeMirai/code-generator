@@ -27,7 +27,7 @@ shell.ls().forEach(filename => {
 })
 
 const config: any = {
-  devtool: 'eval-source-map',
+  devtool: 'cheap-module-eval-source-map',
   mode: 'development',
   entry,
   output: {

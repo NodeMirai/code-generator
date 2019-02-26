@@ -3,6 +3,30 @@
  * @description: 所有常用工具样式
  * 1. 布局类：
  * 2. 盒模型参数： 
- * 3. 特殊形状：圆形，三角，
+ * 3. 特殊形状：圆形，三角，正方形
  */
 
+// 
+
+// 内外边距
+@for $l from 1 through 10 {
+  .p#{$l * 4} {
+    padding: $l * 4px;
+  }
+  .m#{$l * 4} {
+    margin: $l * 4px;
+  }
+}
+
+
+// 正方形
+@mixin square($l) {
+  width: $l;
+  height: $l;
+}
+
+// 圆形
+@mixin circle($r) {
+  @include square(2 * $r);
+  border: 50%;
+}

@@ -4,11 +4,12 @@ import g from '@babel/generator';
 import * as t from '@babel/types';
 
 import { ComponentSource, Prop } from '../class/cs'
-import { AstUtilBase } from './util'
+import { AstUtilBase, FsUtil } from './util'
 import Logger from './log'
 import { LogColor } from './config'
 
 const astUtilBase: AstUtilBase = new AstUtilBase()
+const fsUtil: FsUtil = new FsUtil()
 const logger: Logger = new Logger()
 
 class PageSource {
@@ -184,12 +185,11 @@ class PageSource {
             })
 
             const styleFilename = stylename || 'style.scss'
-            fs.readFile(stylePath + '/' + styleFilename, 'utf-8', (err: Error, data: string) => {
-                if (err) throw err
-                fs.writeFile(dirPath + '/style.scss', data, (err: Error) => {
-                    if (err) throw err
-                })
-            })
+            const componentStyle = dirPath + '/style.scss'
+            // 判断组件文件夹中是否存在样式文件，存在则不进行复制操作
+            fs.access(componentStyle, fs.constants.F_OK, (err: Error) => {
+                if (err) fsUtil.copy(stylePath + '/' + styleFilename, componentStyle)
+            });
         })
     }
 }

@@ -35,7 +35,11 @@ const pageConfigList: Array<PageConfig> = [
         propList: [
           {
             name: 'className',
-            value: 'img',
+            value: 'img m40',
+          },
+          {
+            name: 'src',
+            value: 'http://www.pptbz.com/pptpic/UploadFiles_6909/201203/2012031220134655.jpg'
           }
         ]
       },

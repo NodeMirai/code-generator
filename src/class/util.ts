@@ -34,6 +34,18 @@ class AstUtilBase {
 
 }
 
+class FsUtil {
+    copy(from: string, to: string) {
+        fs.readFile(from, 'utf-8', (err: Error, data: string) => {
+            if (err) throw err
+            fs.writeFile(to, data, (err: Error) => {
+                if (err) throw err
+            })
+        })
+    }
+}
+
 export {
-    AstUtilBase
+    AstUtilBase,
+    FsUtil,
 } 
