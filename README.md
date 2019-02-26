@@ -97,6 +97,11 @@
 6. ts下如何避免过多any使用
 7. webpack中各devtool代表的意义
 8. yarn.lock与package-lock的作用
+9. sass在webpack中loader的顺序为  
+{ loader: 'style-loader', options: { sourceMap: true } }  
+{ loader: 'css-loader', options: { sourceMap: true } }  
+{ loader: 'postcss-loader', options: { sourceMap: true } }  
+{ loader: 'sass-loader', options: { sourceMap: true } }
 
 ## 优化
 1. 构造参数过多时如何处理更方便

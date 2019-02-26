@@ -3,67 +3,71 @@
  * 1. 获取dist下每个文件的路径，用于传入entry多页面入口
  * 2. 使用webpack-dev-server
  */
-import path = require('path')
-import * as shell from 'shelljs'
-import HtmlWebpackPlugin = require('html-webpack-plugin') 
+import path = require("path");
+import * as shell from "shelljs";
+import HtmlWebpackPlugin = require("html-webpack-plugin");
+const px2rem = require("postcss-px2rem");
+const autoprefixer = require("autoprefixer");
 
-const outputPath = path.resolve(__dirname, '../dist')
-const entry: any = {}
-const htmlPluginList: Array<HtmlWebpackPlugin> = []
+const outputPath = path.resolve(__dirname, "../dist");
+const entry: any = {};
+const htmlPluginList: Array<HtmlWebpackPlugin> = [];
 
-shell.cd(outputPath)
+shell.cd(outputPath);
 shell.ls().forEach(filename => {
-  entry[filename+'/'+filename] = outputPath + '/' + filename + '/index.jsx'
+  entry[filename + "/" + filename] = outputPath + "/" + filename + "/index.jsx";
   htmlPluginList.push(
     new HtmlWebpackPlugin({
-      filename: filename + '/index.html',
+      filename: filename + "/index.html",
       chunks: [filename],
-      template: path.resolve(__dirname, './index.ejs'),
+      template: path.resolve(__dirname, "./index.ejs"),
       templateParameters: {
-        js: filename,
+        js: filename
       }
     })
-  )
-})
+  );
+});
 
 const config: any = {
-  devtool: 'cheap-module-eval-source-map',
-  mode: 'development',
+  devtool: "cheap-module-eval-source-map",
+  mode: "development",
   entry,
   output: {
-    path: path.resolve('../build'),
-    filename: '[name].js'
+    path: path.resolve("../build"),
+    filename: "[name].js"
   },
   devServer: {
-    contentBase: path.join(__dirname, '../build'),
+    contentBase: path.join(__dirname, "../build"),
     compress: true,
-    port: 9000,
-    // writeToDisk: true,
+    port: 9000
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         use: {
-          loader: 'babel-loader'
+          loader: "babel-loader"
         }
       },
       {
         test: /\.scss$/,
         use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
+          "style-loader",
+          "css-loader",
           {
-            loader: 'sass-loader',
+            loader: "postcss-loader",
+            options: {
+              plugins: [px2rem({ remUnit: 37.5 }), autoprefixer()],
+              sourceMap: true,
+            }
           },
-        ],
+          "sass-loader",
+        ]
       },
-      { test: /\.ejs$/, loader: 'ejs-loader' },
-    ],
+      { test: /\.ejs$/, loader: "ejs-loader" }
+    ]
   },
-  plugins: [
-    ...htmlPluginList
-  ]
-}
+  plugins: [...htmlPluginList]
+};
 
-export default config
+export default config;
