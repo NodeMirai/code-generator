@@ -1,25 +1,10 @@
+import { PageConfig } from '../src/class/config'
+
 const pageModalMap = {
   pageRender: 'PageRender.jsx',
   page: 'page.jsx'
 }
 const modal = pageModalMap['pageRender']
-
-interface PageConfig {
-  type?: string
-  modal: string
-  filename: string
-  opt?: object
-  className?: string
-  propList?: Array<any>|string
-  children?: Array<ComponentConfig>
-}
-
-interface ComponentConfig {
-  name: string
-  propList?: Array<object>
-  content?: string
-  children?: Array<ComponentConfig>
-}
 
 /**
  * 层级过多时可读性很差，不建议组件层级过多
@@ -29,7 +14,7 @@ const pageConfigList: Array<PageConfig> = [
     type: 'page',
     modal,
     filename: 'imgText',
-    className: 'p10',
+    className: 'demo p40',
     opt: {},
     children: [
       {
@@ -37,7 +22,7 @@ const pageConfigList: Array<PageConfig> = [
         propList: [
           {
             name: 'className',
-            value: 'img m40',
+            value: 'img',
           },
           {
             name: 'src',

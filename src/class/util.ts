@@ -1,6 +1,6 @@
 const fs = require('fs')
 import * as babel from '@babel/core';
-import { ErrorType } from './config'
+import { ErrorType } from './constant'
 
 class AstUtilBase {
 
@@ -29,7 +29,7 @@ class AstUtilBase {
     }
     
     getAstByCode(sourceCode: string): any {
-        return this.parser(sourceCode).program.body
+        return this.parser(sourceCode).program.body[0]
     }
 
 }

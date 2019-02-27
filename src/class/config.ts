@@ -1,15 +1,20 @@
-/**
- * 枚举类型定义文件
- */
-enum LogColor {
-  LOG = 'green',
+interface PageConfig {
+  type?: string
+  modal: string
+  filename: string
+  opt?: object
+  className?: string
+  propList?: Array<any>|string
+  children?: Array<ComponentConfig>
 }
 
-enum ErrorType {
-  FileNotFound = 'file is not found'
+interface ComponentConfig {
+  name: string
+  propList?: Array<object>
+  content?: string
+  children?: Array<ComponentConfig>
 }
 
 export {
-  LogColor,
-  ErrorType,
+  PageConfig,
 }

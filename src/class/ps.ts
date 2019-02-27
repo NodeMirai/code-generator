@@ -6,16 +6,14 @@ import * as t from '@babel/types';
 import { ComponentSource, Prop } from '../class/cs'
 import { AstUtilBase, FsUtil } from './util'
 import Logger from './log'
-import { LogColor } from './config'
+import { LogColor } from './constant'
 
 const astUtilBase: AstUtilBase = new AstUtilBase()
 const fsUtil: FsUtil = new FsUtil()
 const logger: Logger = new Logger()
 
 class PageSource {
-    childCode: string;
     attrCodeStr: string;
-    childrenCode: Array<string>
 
     constructor() {
         this.attrCodeStr = ''
@@ -109,7 +107,7 @@ class PageSource {
                                  * importDefaultSpecifier: import tab from "Hahaha";
                                  * ImportNamespaceSpecifier: import * as tab from "Hahaha";
                                  */
-                                astUtilBase.getAstByCode(`import ${cs.name} from '${componentPath}'`)[0]
+                                astUtilBase.getAstByCode(`import ${cs.name} from '${componentPath}'`)
                             );
                         }
                     })
@@ -118,7 +116,7 @@ class PageSource {
                     if (nativeComponentPath === '') return
                     // 原生组件导入
                     path.insertAfter(
-                        astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)[0]
+                        astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)
                     );
                     logger.log(LogColor.LOG,`${filename}原生组件import代码生成完毕`)
                 }
@@ -143,9 +141,11 @@ class PageSource {
                     children.forEach((cs: ComponentSource) => {
                         childrenCode.push(this.insertChild(cs))
                     })
-                    block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${this.attrCodeStr} } = this.props`)[0]);
+                    block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${this.attrCodeStr} } = this.props`));
                     logger.log(LogColor.LOG,`${LogColor.LOG}中render内部props声明完成`)
-                    jsxContainer.unshiftContainer('children', astUtilBase.getAstByCode(childrenCode.join())[0]); 
+
+                    const hehe = astUtilBase.getAstByCode(childrenCode.join()).replace(/>,|>;/, '>')
+                    jsxContainer.unshiftContainer('children', hehe); 
                     logger.log(LogColor.LOG,`${LogColor.LOG}中render内部模板声明完成`)
                 }
             },

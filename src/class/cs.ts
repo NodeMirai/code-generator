@@ -1,7 +1,7 @@
 const fs = require('fs')
 import traverse from '@babel/traverse';
 import { AstUtilBase } from './util'
-import { ErrorType } from './config'
+import { ErrorType } from './constant'
 import innerConfig from '../../config/path'
 import PsModalFactory from './psModalFactroy'
 import CodeGenerator from './codeGenerator'
