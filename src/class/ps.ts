@@ -95,6 +95,7 @@ class PageSource {
                 const tc = path.node.trailingComments
                 if (tc && tc[0].value === 'import') {
                     let nativeComponentList: Set<string> = new Set()
+                    let componentList: Set<string> = new Set()
                     // 组件库组件导入
                     children.forEach((cs: ComponentSource) => {
                         if (cs.name[0] === '$') {
@@ -102,16 +103,19 @@ class PageSource {
                             cs.name = cs.name.slice(1)
                             nativeComponentList.add(cs.name)
                         } else {
-                            path.insertAfter(
-                                /**
-                                 * local参数表示本地使用的变量, imported表示实际引入的变量
-                                 * importSpecifier: import { tab(imported) as hehe(local) } from "Hahaha";
-                                 * importDefaultSpecifier: import tab from "Hahaha";
-                                 * ImportNamespaceSpecifier: import * as tab from "Hahaha";
-                                 */
-                                astUtilBase.getAstByCode(`import ${cs.name} from '${componentPath}'`)
-                            );
+                            componentList.add(cs.name)
                         }
+                    })
+                    componentList.forEach((csName) => {
+                        path.insertAfter(
+                            /**
+                             * local参数表示本地使用的变量, imported表示实际引入的变量
+                             * importSpecifier: import { tab(imported) as hehe(local) } from "Hahaha";
+                             * importDefaultSpecifier: import tab from "Hahaha";
+                             * ImportNamespaceSpecifier: import * as tab from "Hahaha";
+                             */
+                            astUtilBase.getAstByCode(`import ${csName} from '${componentPath}'`)
+                        );
                     })
                     logger.log(LogColor.LOG,`${filename}内部组件import代码生成完毕`)
 
