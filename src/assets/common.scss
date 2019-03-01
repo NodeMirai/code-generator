@@ -1,14 +1,16 @@
-
+@import './standard.scss';
 /**
  * @description: 所有常用工具样式
  * 1. 布局类：
  * 2. 盒模型参数： 
  * 3. 特殊形状：圆形，三角，正方形
+ * 4. 字体类型
  */
 
-// 
+// 1. 布局类
 
-// 内外边距
+
+// 2. 盒模型参数
 @for $l from 1 through 10 {
   .p#{$l * 4} {
     padding: $l * 4px;
@@ -16,9 +18,12 @@
   .m#{$l * 4} {
     margin: $l * 4px;
   }
+  .mr#{$l * 4} {
+    margin-right: $l * 4px;
+  }
 }
 
-
+// 3. 特殊形状
 // 正方形
 @mixin square($l) {
   width: $l;
@@ -29,4 +34,21 @@
 @mixin circle($r) {
   @include square(2 * $r);
   border: 50%;
+}
+
+// 4. 字体类型
+// 标题
+%title {
+  font-size: $font-size-primary;
+  color: $font-color-primary;
+}
+// 子标题
+%sub-title {
+  font-size: $font-size-normal;
+  color: $font-color-normal;
+}
+
+%product-title {
+  @extend %title;
+  line-height: $line-height-title;
 }

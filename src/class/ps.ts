@@ -13,10 +13,10 @@ const fsUtil: FsUtil = new FsUtil()
 const logger: Logger = new Logger()
 
 class PageSource {
-    attrCodeStr: string;
+    attrCodeStr: Set<string>;
 
     constructor() {
-        this.attrCodeStr = ''
+        this.attrCodeStr = new Set()
     }
 
     insertChild(cs: ComponentSource): string {
@@ -26,7 +26,7 @@ class PageSource {
         cs.propList.forEach((prop: string | Prop) => {
             if (typeof prop === 'string') {
                 // 仅字符串类型时拼接
-                this.attrCodeStr += prop + ', '
+                this.attrCodeStr.add(prop)
                 jsxAttrCodeStr += `${prop}={${prop}} `
             } else {
                 const { name, value } = prop
@@ -71,7 +71,9 @@ class PageSource {
         const outModelPath = `${modelPath}/${modal}`
         const ast = astUtilBase.generatorAst(outModelPath)
         logger.log(LogColor.LOG,`${modal}模板读取ast完成`)
-        
+
+        // fs.writeFileSync('./ast.js', JSON.stringify(ast))
+
         ComponentSource.initForest(type, children)
         logger.log(LogColor.LOG,`${filename}初始化森林完成`)
         ComponentSource.initChildrenAst(resolveComponentPath, children)
@@ -141,11 +143,11 @@ class PageSource {
                     children.forEach((cs: ComponentSource) => {
                         childrenCode.push(this.insertChild(cs))
                     })
-                    block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${this.attrCodeStr} } = this.props`));
+                    block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${Array.from(this.attrCodeStr).join(', ')} } = this.props`));
                     logger.log(LogColor.LOG,`${LogColor.LOG}中render内部props声明完成`)
 
-                    const hehe = astUtilBase.getAstByCode(childrenCode.join()).replace(/>,|>;/, '>')
-                    jsxContainer.unshiftContainer('children', hehe); 
+                    const jsxChild = astUtilBase.getAstByCode(childrenCode.join())
+                    jsxContainer.unshiftContainer('children', jsxChild); 
                     logger.log(LogColor.LOG,`${LogColor.LOG}中render内部模板声明完成`)
                 }
             },

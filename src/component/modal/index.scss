@@ -1,0 +1,77 @@
+@import '@styles/common';
+@import '@styles/qui';
+
+$modal-header-font-size:    36px;
+$modal-body-padding:        42px;
+
+.q-modal {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  transition: visibility $animation-duration $animation-timing-func;
+  z-index: $zindex-modal;
+}
+
+.q-modal--visible {
+  visibility: visible;
+}
+
+.q-modal__mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: $modal-mask-bg;
+}
+
+.q-modal__wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: $modal-width;
+  background-color: #ffffff;
+  border-radius: $modal-border-radius;
+}
+
+.q-modal__header {
+  padding: 50px $modal-body-padding 0;
+  font-size: $modal-header-font-size;
+  line-height: $modal-header-font-size;
+  text-align: center;
+}
+
+.q-modal__body {
+  padding: 40px $modal-body-padding;
+  font-size: 36px;
+}
+
+.q-modal__footer {
+  display: flex;
+  align-items: center;
+}
+
+.q-modal__btn {
+  flex: 1;
+  height: $modal-btn-height;
+  line-height: $modal-btn-height;
+  text-align: center;
+  font-size: $modal-btn-font-size;
+}
+
+.q-modal__btn-cancel {
+  color: $modal-btn-cancel-color;
+}
+
+.q-modal__btn-ok {
+  color: $modal-btn-ok-color;
+}
+
+.q-modal__line {
+  width: 0;
+  height: $modal-btn-font-size;
+}

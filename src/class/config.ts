@@ -4,13 +4,13 @@ interface PageConfig {
   filename: string
   opt?: object
   className?: string
-  propList?: Array<any>|string
+  propList?: Array<object|string>
   children?: Array<ComponentConfig>
 }
 
 interface ComponentConfig {
   name: string
-  propList?: Array<object>
+  propList?: Array<object|string>
   content?: string
   children?: Array<ComponentConfig>
 }

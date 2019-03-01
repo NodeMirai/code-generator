@@ -71,7 +71,7 @@ export class ComponentSource {
         if (!/\$/.test(cs.name)) {
             // 首字母单词转小写, 约定组件名称全部使用小写
             try {
-              cs.ast = astUtilBase.generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}.jsx`)
+              cs.ast = astUtilBase.generatorAst(`${resolveComponentPath}/${cs.name.toLocaleLowerCase()}/index.jsx`)
             } catch(e) {
               switch(e.message) {
                 case ErrorType.FileNotFound:
@@ -96,11 +96,9 @@ export class ComponentSource {
               }
             } finally {
               traverse(cs.ast, {
-                  Identifier: function (path) {
+                  Identifier: function (path: any) {
                       if (path.node.name === 'defaultProps') {
-                          const expression: any = path.findParent((path) => path.key === 'expression');
-                          const right = expression.node.right
-                          right.properties.forEach((item: any) => {
+                          path.container.value.properties.forEach((item: any) => {
                               cs.propList.push(item.key.name)
                           })
                       }

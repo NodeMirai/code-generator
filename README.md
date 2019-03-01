@@ -40,6 +40,7 @@
 8. 生成的组件放到对应文件夹中
 9. 生成的页面代码放入文件夹中，文件夹中加入style.scss样式
 10. 异步流程promise封装
+11. **如果propList属性名以on开头则视为事件，将该事件代码自动声明在组件中**
 
 ## node项目下使用ts代码重构
 1. 创建tsconfig.json，模版如下
@@ -100,9 +101,22 @@
 9. sass在webpack中loader的顺序为  
 { loader: 'style-loader', options: { sourceMap: true } }  
 { loader: 'css-loader', options: { sourceMap: true } }  
-{ loader: 'postcss-loader', options: { sourceMap: true } }  
+{ loader: 'postcss-loader', options: { sourceMap: true } }
 { loader: 'sass-loader', options: { sourceMap: true } }
+10. JSON.stringify(path)由于path对象中存在pathPath，循环引用会报错
 
 ## 优化
 1. 构造参数过多时如何处理更方便
 2. ts参数类型的重复声明问题: 声明为any后可防止属性exist问题
+
+## 开发流程
+1. 划分页面自组件
+2. 针对子组件分别开发,将开发完成的组件放入components中, 补全defaultProps
+3. 全部组件开发完毕后
+
+## bug list
+1. filename与cs的name相同时，生成代码会出现变量名重复的问题
+2. webpack多文件打包时，如果其中一个文件抛出异常需要如何处理
+3. children中name相同时重复引入组件代码重复
+4. initChildrenAst方法捕获异常处理存在问题，仅保证了defaultProps无法获取，而没有终止该cs的其他逻辑，应该把对应cs生成后清除
+5. ast遍历时获取节点结构流程硬编码，导致model内结构变化时报错

@@ -13,53 +13,29 @@ const pageConfigList: Array<PageConfig> = [
   {
     type: 'page',
     modal,
-    filename: 'imgText',
-    className: 'demo p40',
+    filename: 'twoModal',
+    className: 'two-modal',
     opt: {},
     children: [
       {
-        name: '$img',
+        name: 'Modal',
         propList: [
+          'visible',
+          'showCancel',
+          'showOk',
           {
-            name: 'className',
-            value: 'img',
+            name: 'cancelText',
+            value: '取消'
           },
           {
-            name: 'src',
-            value: 'http://www.pptbz.com/pptpic/UploadFiles_6909/201203/2012031220134655.jpg'
-          }
+            name: 'okText',
+            value: '确定'
+          },
         ]
       },
       {
-        name: '$div',
-        propList: [
-          {
-            name: 'className',
-            value: 'text',
-          }
-        ],
-        children: [
-          {
-            name: '$div',
-            propList: [
-              {
-                name: 'className',
-                value: 'title',
-              }
-            ],
-            content: '主title'
-          },
-          {
-            name: '$div',
-            propList: [
-              {
-                name: 'className',
-                value: 'sub-title',
-              }
-            ],
-            content: '子title'
-          },
-        ]
+        name: 'Modal',
+        
       },
     ],
   },
