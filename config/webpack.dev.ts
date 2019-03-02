@@ -15,7 +15,7 @@ const htmlPluginList: Array<HtmlWebpackPlugin> = [];
 
 shell.cd(outputPath);
 shell.ls().forEach(filename => {
-  entry[filename + "/" + filename] = outputPath + "/" + filename + "/index.jsx";
+  entry[filename + "/" + filename] = outputPath + "/" + filename + "/index.js";
   htmlPluginList.push(
     new HtmlWebpackPlugin({
       filename: filename + "/index.html",

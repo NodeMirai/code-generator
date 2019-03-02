@@ -121,3 +121,5 @@
 3. children中name相同时重复引入组件代码重复  close
 4. initChildrenAst方法捕获异常处理存在问题，仅保证了defaultProps无法获取，而没有终止该cs的其他逻辑，应该把对应cs生成后清除
 5. ast遍历时获取节点结构流程硬编码，导致model内结构变化时报错
+6. webpack启动server，url 'appoint/'与'appoint'行为不一致
+7. 组件与模板读取、webpack配置和输出时需要兼容js与jsx两种后缀：暂时仅使用js后缀

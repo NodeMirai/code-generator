@@ -36,7 +36,7 @@ const pageConfigList: Array<PageConfig> = [
             content: '?',
           }
         ]
-      }
+      },
     ]
   }
 ]

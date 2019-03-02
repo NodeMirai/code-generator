@@ -67,7 +67,6 @@ class PageSource {
             resolveComponentPath,
             modelPath,
         } = innerConfig
-    
         const outModelPath = `${modelPath}/${modal}`
         const ast = astUtilBase.generatorAst(outModelPath)
         logger.log(LogColor.LOG,`${modal}模板读取ast完成`)
@@ -190,7 +189,7 @@ class PageSource {
         // 待整理
         fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
             // if (err) throw err 文件夹存在的情况下删除文件重建
-            fs.writeFile(dirPath + '/index.jsx', out.code, (err: Error) => {
+            fs.writeFile(dirPath + '/index.js', out.code, (err: Error) => {
                 if (err) throw err
                 logger.log('yellow', `${filename}已生成到${outPath}`)
             })
