@@ -57,6 +57,7 @@ class PageSource {
             modal,
             filename,
             stylename,
+            nativeComponentPath,
             className,
             opt,
             children
@@ -64,7 +65,6 @@ class PageSource {
         const {
             componentPath,
             resolveComponentPath,
-            nativeComponentPath,
             modelPath,
         } = innerConfig
     

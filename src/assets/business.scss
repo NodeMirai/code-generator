@@ -1,0 +1,12 @@
+@import './common.scss';
+
+// 顶部提示框，可点击
+.top-notice {
+  @extend %top-fix;
+  @extend %lr-center;  
+  @extend .pl40;
+  @extend .pr40;
+  font-size: $font-size-sm;
+  color: #fff;
+  background: $notice-color;
+}

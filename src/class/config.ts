@@ -2,6 +2,7 @@ interface PageConfig {
   type?: string
   modal: string
   filename: string
+  nativeComponentPath?: string
   opt?: object
   className?: string
   propList?: Array<object|string>

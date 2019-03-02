@@ -8,7 +8,6 @@ const outPath = path.resolve('./dist')  // 输出文件位置
 
 export default {
   componentPath,
-  nativeComponentPath: '@tarojs/taro',
   resolveComponentPath,
   modelPath,
   outPath,

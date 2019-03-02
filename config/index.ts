@@ -2,18 +2,18 @@ import { PageConfig } from '../src/class/config'
 
 const pageModalMap = {
   pageRender: 'PageRender.jsx',
-  page: 'page.jsx'
+  page: 'page.jsx',
+  taro: 'taropage.jsx'
 }
-const modal = pageModalMap['pageRender']
 
 /**
  * 层级过多时可读性很差，不建议组件层级过多
  */
 const pageConfigList: Array<PageConfig> = [
-  {
-    type: 'page',
-    modal,
+  /* {
+    modal: pageModalMap.pageRender,
     filename: 'twoModal',
+    nativeComponentPath: '@tarojs/taro',
     className: 'two-modal',
     opt: {},
     children: [
@@ -35,10 +35,25 @@ const pageConfigList: Array<PageConfig> = [
       },
       {
         name: 'Modal',
-        
       },
     ],
-  },
+  }, */
+  {
+    modal: pageModalMap.pageRender,
+    filename: 'appoint',
+    className: 'appoint',
+    children: [
+      {
+        name: '$div',
+        propList: [
+          {
+            name: 'className',
+            value: 'top-notice',
+          }
+        ]
+      }
+    ]
+  }
 ]
 
 export default pageConfigList

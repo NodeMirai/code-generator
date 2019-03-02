@@ -8,11 +8,28 @@
  */
 
 // 1. 布局类
-
+// 弹性布局，垂直居中，左右对齐
+%lr-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+// 固定顶部
+%top-fix {
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
 
 // 2. 盒模型参数
 @for $l from 1 through 10 {
   .p#{$l * 4} {
+    padding: $l * 4px;
+  }
+  .pl#{$l * 4} {
+    padding: $l * 4px;
+  }
+  .pr#{$l * 4} {
     padding: $l * 4px;
   }
   .m#{$l * 4} {
