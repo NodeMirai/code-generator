@@ -119,7 +119,7 @@ class PageSource {
                     })
                     logger.log(LogColor.LOG,`${filename}内部组件import代码生成完毕`)
 
-                    if (nativeComponentPath === '') return
+                    if (!nativeComponentPath) return
                     // 原生组件导入
                     path.insertAfter(
                         astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)
@@ -147,8 +147,10 @@ class PageSource {
                     children.forEach((cs: ComponentSource) => {
                         childrenCode.push(this.insertChild(cs))
                     })
-                    block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${Array.from(this.attrCodeStr).join(', ')} } = this.props`));
-                    logger.log(LogColor.LOG,`${LogColor.LOG}中render内部props声明完成`)
+                    if (this.attrCodeStr.size !== 0) {
+                        block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${Array.from(this.attrCodeStr).join(', ')} } = this.props`));
+                        logger.log(LogColor.LOG,`${LogColor.LOG}中render内部props声明完成`)
+                    }
 
                     const jsxChild = astUtilBase.getAstByCode(childrenCode.join())
                     jsxContainer.unshiftContainer('children', jsxChild); 

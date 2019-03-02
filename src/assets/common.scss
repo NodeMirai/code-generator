@@ -17,6 +17,7 @@
 // 固定顶部
 %top-fix {
   position: fixed;
+  box-sizing: border-box;
   width: 100%;
   top: 0;
 }
@@ -27,10 +28,10 @@
     padding: $l * 4px;
   }
   .pl#{$l * 4} {
-    padding: $l * 4px;
+    padding-left: $l * 4px;
   }
   .pr#{$l * 4} {
-    padding: $l * 4px;
+    padding-right: $l * 4px;
   }
   .m#{$l * 4} {
     margin: $l * 4px;

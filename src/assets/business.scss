@@ -4,6 +4,7 @@
 .top-notice {
   @extend %top-fix;
   @extend %lr-center;  
+  height: 80px;
   @extend .pl40;
   @extend .pr40;
   font-size: $font-size-sm;

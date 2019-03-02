@@ -6,7 +6,9 @@
   "author": "nodemirai <wuyunfeng0@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "gc": "ts-node app.ts",
+    "gc:p": "ts-node app.ts -p",
+    "gc:r": "ts-node app.ts -r",
+    "gc:t": "ts-node app.ts -t",
     "start:dev": "webpack-dev-server --config ./config/webpack.dev.ts",
     "dev": "npx webpack --mode development --config ./config/webpack.dev.ts"
   },

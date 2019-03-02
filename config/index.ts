@@ -1,45 +1,20 @@
 import { PageConfig } from '../src/class/config'
 
-const pageModalMap = {
-  pageRender: 'PageRender.jsx',
-  page: 'page.jsx',
-  taro: 'taropage.jsx'
+// ??? ts中变量复制对象时如何类型推导
+const pageModalMap: any = {
+  '-r': 'PageRender.jsx',
+  '-p': 'page.jsx',
+  '-t': 'taropage.jsx'
 }
+
+const modal = pageModalMap[process.argv[2]]
 
 /**
  * 层级过多时可读性很差，不建议组件层级过多
  */
 const pageConfigList: Array<PageConfig> = [
-  /* {
-    modal: pageModalMap.pageRender,
-    filename: 'twoModal',
-    nativeComponentPath: '@tarojs/taro',
-    className: 'two-modal',
-    opt: {},
-    children: [
-      {
-        name: 'Modal',
-        propList: [
-          'visible',
-          'showCancel',
-          'showOk',
-          {
-            name: 'cancelText',
-            value: '取消'
-          },
-          {
-            name: 'okText',
-            value: '确定'
-          },
-        ]
-      },
-      {
-        name: 'Modal',
-      },
-    ],
-  }, */
   {
-    modal: pageModalMap.pageRender,
+    modal,
     filename: 'appoint',
     className: 'appoint',
     children: [
@@ -49,6 +24,16 @@ const pageConfigList: Array<PageConfig> = [
           {
             name: 'className',
             value: 'top-notice',
+          }
+        ],
+        children: [
+          {
+            name: '$span',
+            content: '包袋预约将根据会员等级依次排队文案未定',
+          },
+          {
+            name: '$span',
+            content: '?',
           }
         ]
       }
