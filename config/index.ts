@@ -7,7 +7,9 @@ const pageModalMap: any = {
   '-t': 'taropage.jsx'
 }
 
-const modal = pageModalMap[process.argv[2]]
+export const pageModal = process.argv[2]
+
+const modal = pageModalMap[pageModal]
 
 /**
  * 层级过多时可读性很差，不建议组件层级过多
@@ -15,11 +17,12 @@ const modal = pageModalMap[process.argv[2]]
 const pageConfigList: Array<PageConfig> = [
   {
     modal,
-    filename: 'appoint',
-    className: 'appoint',
+    filename: 'myorder',
+    className: 'myorder',
+    nativeComponentPath: '@tarojs/components',
     children: [
       {
-        name: '$div',
+        name: '$View',
         propList: [
           {
             name: 'className',
@@ -28,15 +31,18 @@ const pageConfigList: Array<PageConfig> = [
         ],
         children: [
           {
-            name: '$span',
+            name: '$Text',
             content: '包袋预约将根据会员等级依次排队文案未定',
           },
           {
-            name: '$span',
+            name: '$Text',
             content: '?',
           }
         ]
       },
+      {
+        name: 'ImageSwiper'
+      }
     ]
   }
 ]

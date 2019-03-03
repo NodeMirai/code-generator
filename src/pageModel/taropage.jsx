@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-
+import Taro, { Component } from "@tarojs/taro";
+import { connect } from "@tarojs/redux"
 //import
 
 class Demo extends Component {
@@ -7,9 +7,9 @@ class Demo extends Component {
   render() {
     
     return (
-      <div className='demo'>
+      <View className='demo'>
         
-      </div>
+      </View>
     )
   }
 }

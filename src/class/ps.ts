@@ -1,209 +1,328 @@
-const fs = require('fs');
-import traverse from '@babel/traverse';
-import g from '@babel/generator';
-import * as t from '@babel/types';
+const fs = require("fs");
+import traverse from "@babel/traverse";
+import g from "@babel/generator";
+import * as t from "@babel/types";
 
-import { ComponentSource, Prop } from '../class/cs'
-import { AstUtilBase, FsUtil } from './util'
-import Logger from './log'
-import { LogColor } from './constant'
+import ComponentSourseFactory, { ComponentSource, Prop } from "../class/cs";
+import { AstUtilBase, FsUtil, ConstantUtil } from "./util";
+import Logger from "./log";
+import { LogColor } from "./constant";
+import { ErrorType } from "./constant";
+import innerConfig from "../../config/path";
+import PsModalFactory from "./psModalFactroy";
+import CodeGenerator from "./codeGenerator";
+import { pageModel } from "../../config/";
 
-const astUtilBase: AstUtilBase = new AstUtilBase()
-const fsUtil: FsUtil = new FsUtil()
-const logger: Logger = new Logger()
+const astUtilBase: AstUtilBase = new AstUtilBase();
+const constantUtil: ConstantUtil = new ConstantUtil();
+const fsUtil: FsUtil = new FsUtil();
+const logger: Logger = new Logger();
+const csFactory: ComponentSourseFactory = new ComponentSourseFactory();
 
 class PageSource {
-    attrCodeStr: Set<string>;
+  attrCodeStr: Set<string>;
+  nativeComponentList: Set<string>;
+  componentList: Set<string>;
 
-    constructor() {
-        this.attrCodeStr = new Set()
-    }
+  constructor() {
+    this.attrCodeStr = new Set();
+    this.nativeComponentList = new Set();
+    this.componentList = new Set();
+  }
 
-    insertChild(cs: ComponentSource): string {
-        let jsxAttrCodeStr = ''  // 每个树上组件属性代码片段
-        if (cs.name[0] === '$') cs.name = cs.name.slice(1)
-        // 拼接props所需属性和jsx标签属性
-        cs.propList.forEach((prop: string | Prop) => {
-            if (typeof prop === 'string') {
-                // 仅字符串类型时拼接
-                this.attrCodeStr.add(prop)
-                jsxAttrCodeStr += `${prop}={${prop}} `
-            } else {
-                const { name, value } = prop
-                jsxAttrCodeStr += `${name}='${value}' `
-            }
-        })
-        // 根据jsx是否存在子节点属性确定拼接字符串方式
-        if ((!cs.children || !Array.isArray(cs.children)) && !cs.content) {
-            cs.childCode = cs.childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} />`)
-            return cs.childCode
-        } if (cs.content || (cs.children && cs.children.length === 0) ) {
-            cs.childCode = cs.childCode.replace('|', `<${cs.name} ${jsxAttrCodeStr} >${cs.content}</${cs.name}>`)
-            return cs.childCode
-        } else {
-            const childrenCode = []
-            // 传入子节点递归children
-            for (let i = 0; i < cs.children.length; i++) {
-                childrenCode.push(this.insertChild(cs.children[i]))
-                cs.childCode = null
-            }
-            return `<${cs.name} ${jsxAttrCodeStr} >${childrenCode.join()}</${cs.name}>`
+  generatorAstFromConfig(innerConfig: any, outConfig: any) {
+    const {
+      type,
+      modal,
+      filename,
+      stylename,
+      nativeComponentPath,
+      className,
+      opt,
+      children
+    } = outConfig;
+    const { componentPath, resolveComponentPath, modelPath } = innerConfig;
+    const outModelPath = `${modelPath}/${modal}`;
+    const ast = astUtilBase.generatorAst(outModelPath);
+    logger.log(LogColor.LOG, `${modal}模板读取ast完成`);
+
+    // fs.writeFileSync('./ast.js', JSON.stringify(ast))
+
+    this.initForest(type, children);
+    logger.log(LogColor.LOG, `${filename}初始化森林完成`);
+    this.initChildrenAst(resolveComponentPath, children);
+    logger.log(
+      LogColor.LOG,
+      `${filename}完成森林节点中各内部组件ast初始化完成`
+    );
+
+    /**
+     * 向模板中插入component
+     * 1. import
+     * 2. class 与 export
+     * 3. const 结构语句
+     * 4. render中return的div中插入component以及属性
+     */
+    const PageName = filename[0].toUpperCase() + filename.slice(1);
+    traverse(ast, {
+      /**
+       * import模块引入部分
+       */
+      ImportDeclaration: path => {
+        const tc = path.node.trailingComments;
+        if (tc && tc[0].value === "import") {
+          this.componentList.forEach(csName => {
+            path.insertAfter(
+              /**
+               * local参数表示本地使用的变量, imported表示实际引入的变量
+               * importSpecifier: import { tab(imported) as hehe(local) } from "Hahaha";
+               * importDefaultSpecifier: import tab from "Hahaha";
+               * ImportNamespaceSpecifier: import * as tab from "Hahaha";
+               */
+              astUtilBase.getAstByCode(
+                `import ${csName} from '${componentPath}'`
+              )
+            );
+          });
+          logger.log(LogColor.LOG, `${filename}内部组件import代码生成完毕`);
+
+          if (!nativeComponentPath) return;
+          // 原生组件导入
+          path.insertAfter(
+            astUtilBase.getAstByCode(
+              `import {${Array.from(this.nativeComponentList).join(
+                ", "
+              )}} from '${nativeComponentPath}'`
+            )
+          );
+          logger.log(LogColor.LOG, `${filename}原生组件import代码生成完毕`);
         }
+      },
+      /**
+       * render中属性声明部分与children部分
+       * @param path
+       */
+      ClassMethod: path => {
+        const { key } = path.node as any;
+        if (key.name === "render") {
+          // 获取组件中所有defaultProps名，拼接到变量声明中
+          let childrenCode: Array<string> = [];
+          const block: any = path.get("body");
+          const returnStatement = block
+            .get("body")
+            .find((item: any) => t.isReturnStatement(item));
+          const jsxContainer = returnStatement.get("argument");
+          const classNameNode = jsxContainer.node.openingElement.attributes.find(
+            (item: any) => t.isJSXAttribute(item)
+          );
+
+          if (className) classNameNode.value.value = className;
+          children.forEach((cs: ComponentSource) => {
+            childrenCode.push(this.insertChild(cs));
+          });
+          if (this.attrCodeStr.size !== 0) {
+            block.unshiftContainer(
+              "body",
+              astUtilBase.getAstByCode(
+                `const { ${Array.from(this.attrCodeStr).join(
+                  ", "
+                )} } = this.props`
+              )
+            );
+            logger.log(
+              LogColor.LOG,
+              `${LogColor.LOG}中render内部props声明完成`
+            );
+          }
+
+          const jsxChild = astUtilBase.getAstByCode(childrenCode.join());
+          jsxContainer.unshiftContainer("children", jsxChild);
+          logger.log(LogColor.LOG, `${LogColor.LOG}中render内部模板声明完成`);
+        }
+      },
+      ClassDeclaration: function(path) {
+        path.node.id.name = PageName;
+      },
+      ExportDefaultDeclaration: function(path: any) {
+        path.node.declaration.name = PageName;
+      },
+      CallExpression: path => {
+        const callee: any = path.node.callee;
+        if (callee.object && callee.object.name === "ReactDOM") {
+          let argument: any = path.node.arguments[0];
+          argument.openingElement.name.name = PageName;
+        }
+      }
+    });
+
+    return {
+      ast,
+      filename,
+      stylename
+    };
+  }
+
+  insertChild(cs: ComponentSource): string {
+    let jsxAttrCodeStr = ""; // 每个树上组件属性代码片段
+    if (cs.name[0] === "$") cs.name = cs.name.slice(1);
+    // 拼接props所需属性和jsx标签属性
+    cs.propList.forEach((prop: string | Prop) => {
+      if (typeof prop === "string") {
+        // 仅字符串类型时拼接
+        this.attrCodeStr.add(prop);
+        jsxAttrCodeStr += `${prop}={${prop}} `;
+      } else {
+        const { name, value } = prop;
+        jsxAttrCodeStr += `${name}='${value}' `;
+      }
+    });
+    // 根据jsx是否存在子节点属性确定拼接字符串方式
+    if ((!cs.children || !Array.isArray(cs.children)) && !cs.content) {
+      cs.childCode = cs.childCode.replace(
+        "|",
+        `<${cs.name} ${jsxAttrCodeStr} />`
+      );
+      return cs.childCode;
     }
+    if (cs.content || (cs.children && cs.children.length === 0)) {
+      cs.childCode = cs.childCode.replace(
+        "|",
+        `<${cs.name} ${jsxAttrCodeStr} >${cs.content}</${cs.name}>`
+      );
+      return cs.childCode;
+    } else {
+      const childrenCode = [];
+      // 传入子节点递归children
+      for (let i = 0; i < cs.children.length; i++) {
+        childrenCode.push(this.insertChild(cs.children[i]));
+        cs.childCode = null;
+      }
+      return `<${cs.name} ${jsxAttrCodeStr} >${childrenCode.join()}</${
+        cs.name
+      }>`;
+    }
+  }
 
-    generatorAstFromConfig(innerConfig: any, outConfig: any) {
-        const {
-            type,
-            modal,
-            filename,
-            stylename,
-            nativeComponentPath,
-            className,
-            opt,
-            children
-        } = outConfig
-        const {
-            componentPath,
-            resolveComponentPath,
-            modelPath,
-        } = innerConfig
-        const outModelPath = `${modelPath}/${modal}`
-        const ast = astUtilBase.generatorAst(outModelPath)
-        logger.log(LogColor.LOG,`${modal}模板读取ast完成`)
+  /**
+   * 初始化森林节点中每个内部组件库的ast，并拼接好对应的defaultProps
+   * @param resolveComponentPath
+   * @param children
+   */
+  initChildrenAst(
+    resolveComponentPath: string,
+    children: Array<ComponentSource>
+  ) {
+    if (!children || children.length === 0) return;
+    /**
+     * 配置解析
+     */
+    // 根据children获取component
+    children.forEach((cs: ComponentSource) => {
+      cs.propList = cs.propList || [];
 
-        // fs.writeFileSync('./ast.js', JSON.stringify(ast))
-
-        ComponentSource.initForest(type, children)
-        logger.log(LogColor.LOG,`${filename}初始化森林完成`)
-        ComponentSource.initChildrenAst(resolveComponentPath, children)
-        logger.log(LogColor.LOG,`${filename}完成森林节点中各内部组件ast初始化完成`)
-    
-        /**
-         * 向模板中插入component
-         * 1. import 
-         * 2. class 与 export
-         * 3. const 结构语句
-         * 4. render中return的div中插入component以及属性
-         */
-        const PageName = filename[0].toUpperCase() + filename.slice(1)
-        traverse(ast, {
-            /**
-             * import模块引入部分
-             */
-            ImportDeclaration: function (path) {
-                const tc = path.node.trailingComments
-                if (tc && tc[0].value === 'import') {
-                    let nativeComponentList: Set<string> = new Set()
-                    let componentList: Set<string> = new Set()
-                    // 组件库组件导入
-                    children.forEach((cs: ComponentSource) => {
-                        if (cs.name[0] === '$') {
-                            // 原生组件使用$开头
-                            cs.name = cs.name.slice(1)
-                            nativeComponentList.add(cs.name)
-                        } else {
-                            componentList.add(cs.name)
-                        }
-                    })
-                    componentList.forEach((csName) => {
-                        path.insertAfter(
-                            /**
-                             * local参数表示本地使用的变量, imported表示实际引入的变量
-                             * importSpecifier: import { tab(imported) as hehe(local) } from "Hahaha";
-                             * importDefaultSpecifier: import tab from "Hahaha";
-                             * ImportNamespaceSpecifier: import * as tab from "Hahaha";
-                             */
-                            astUtilBase.getAstByCode(`import ${csName} from '${componentPath}'`)
-                        );
-                    })
-                    logger.log(LogColor.LOG,`${filename}内部组件import代码生成完毕`)
-
-                    if (!nativeComponentPath) return
-                    // 原生组件导入
-                    path.insertAfter(
-                        astUtilBase.getAstByCode(`import {${Array.from(nativeComponentList).join(', ')}} from '${nativeComponentPath}'`)
-                    );
-                    logger.log(LogColor.LOG,`${filename}原生组件import代码生成完毕`)
-                }
-            },
-            /**
-             * render中属性声明部分与children部分
-             * @param path 
-             */
-            ClassMethod: (path) => {
-                const {
-                    key
-                } = path.node as any
-                if (key.name === 'render') {
-                    // 获取组件中所有defaultProps名，拼接到变量声明中
-                    let childrenCode: Array<string> = []
-                    const block: any = path.get('body')
-                    const returnStatement = block.get('body').find((item: any) => t.isReturnStatement(item))
-                    const jsxContainer = returnStatement.get('argument')
-                    const classNameNode = jsxContainer.node.openingElement.attributes.find((item: any) => t.isJSXAttribute(item))
-
-                    if (className) classNameNode.value.value = className
-                    children.forEach((cs: ComponentSource) => {
-                        childrenCode.push(this.insertChild(cs))
-                    })
-                    if (this.attrCodeStr.size !== 0) {
-                        block.unshiftContainer('body', astUtilBase.getAstByCode(`const { ${Array.from(this.attrCodeStr).join(', ')} } = this.props`));
-                        logger.log(LogColor.LOG,`${LogColor.LOG}中render内部props声明完成`)
+      // 如果是原生组件,则不查找defaultProps
+      if (cs.name[0] !== "$") {
+        this.componentList.add(cs.name);
+        // 首字母单词转小写, 约定组件名称全部使用小写
+        try {
+          cs.ast = astUtilBase.generatorAst(
+            `${resolveComponentPath}/${cs.name.toLocaleLowerCase()}/index.js`
+          );
+        } catch (e) {
+          switch (e.message) {
+            case ErrorType.FileNotFound:
+              /**
+               * 组件不存在时，需要递归生成
+               * 1. 在组件模型工厂中根据name查找对应的PageSource
+               * 2. 如果不存在，则将该组件记录在特定文件中，以便后续添加
+               */
+              const psModalFactory = new PsModalFactory();
+              const psModal = psModalFactory.generate(cs.name);
+              if (psModal !== undefined) {
+                CodeGenerator.main(innerConfig, psModal);
+              } else {
+                // 输出记录下来
+                fs.appendFile(
+                  innerConfig.modalLog,
+                  `${cs.name}不在模型库中\n`,
+                  (err: Error) => {
+                    if (err) throw err;
+                    console.log(`${cs.name}不存在`);
+                  }
+                );
+              }
+              break;
+            default:
+          }
+        } finally {
+          traverse(cs.ast, {
+            Identifier: function(path: any) {
+              if (path.node.name === "defaultProps") {
+                path.container.value.properties.forEach((item: any) => {
+                  const isPropExist = cs.propList.some(prop => {
+                    const name = item.key.name;
+                    if (typeof prop === "string") {
+                      return prop === name;
+                    } else {
+                      return prop.name === name;
                     }
-
-                    const jsxChild = astUtilBase.getAstByCode(childrenCode.join())
-                    jsxContainer.unshiftContainer('children', jsxChild); 
-                    logger.log(LogColor.LOG,`${LogColor.LOG}中render内部模板声明完成`)
-                }
-            },
-            ClassDeclaration: function (path) {
-                path.node.id.name = PageName
-            },
-            ExportDefaultDeclaration: function (path: any) {
-                path.node.declaration.name = PageName
-            },
-            CallExpression: (path) => {
-                const callee: any = path.node.callee
-                if (callee.object && callee.object.name === 'ReactDOM') {
-                    let argument: any = path.node.arguments[0]
-                    argument.openingElement.name.name = PageName
-                }
+                  });
+                  if (!isPropExist) {
+                    cs.propList.push(item.key.name);
+                  }
+                });
+              }
             }
-        })
-    
-        return {
-            ast,
-            filename,
-            stylename
+          });
         }
-    }
+      } else {
+        this.nativeComponentList.add(cs.name.slice(1));
+      }
+      this.initChildrenAst(resolveComponentPath, cs.children);
+    });
+  }
 
-    output(ast: any, path: any) {
-        const { stylePath, outPath, filename, stylename } = path
-        // 输出部分
-        const out = g(ast, {
-            quotes: "double",
-            comments: false,
-        })
-        const dirPath = outPath + '/' + filename
-        // 待整理
-        fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
-            // if (err) throw err 文件夹存在的情况下删除文件重建
-            fs.writeFile(dirPath + '/index.js', out.code, (err: Error) => {
-                if (err) throw err
-                logger.log('yellow', `${filename}已生成到${outPath}`)
-            })
-
-            const styleFilename = stylename || 'style.scss'
-            const componentStyle = dirPath + '/style.scss'
-            // 判断组件文件夹中是否存在样式文件，存在则不进行复制操作
-            fs.access(componentStyle, fs.constants.F_OK, (err: Error) => {
-                if (err) fsUtil.copy(stylePath + '/' + styleFilename, componentStyle)
-            });
-        })
+  /**
+   * 初始化森林方法
+   * @this.initChildrenAst
+   * @param children
+   */
+  initForest(type: string, children: Array<ComponentSource>) {
+    // 递归终止条件
+    if (!children || children.length === 0) return;
+    // 初始化每个节点对象
+    for (let i = 0; i < children.length; i++) {
+      const cs = csFactory.generate(type, children[i]);
+      children[i] = cs;
+      this.initForest(cs.type, cs.children);
     }
+  }
+
+  output(ast: any, path: any) {
+    const { stylePath, outPath, filename, stylename } = path;
+    // 输出部分
+    const out = g(ast, {
+      quotes: "double",
+      comments: false
+    });
+    const dirPath = outPath + "/" + filename;
+    // 待整理
+    fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
+      // if (err) throw err 文件夹存在的情况下删除文件重建
+      const path = `${dirPath}/${pageModel === '-t' ? filename : 'index'}${constantUtil.getPostfix(pageModel)}`
+      fs.writeFile(path, out.code, (err: Error) => {
+        if (err) throw err;
+        logger.log("yellow", `${filename}已生成到${outPath}`);
+      });
+
+      const styleFilename = stylename || "style.scss";
+      const componentStyle = dirPath + "/style.scss";
+      // 判断组件文件夹中是否存在样式文件，存在则不进行复制操作
+      fs.access(componentStyle, fs.constants.F_OK, (err: Error) => {
+        if (err) fsUtil.copy(stylePath + "/" + styleFilename, componentStyle);
+      });
+    });
+  }
 }
 
-export {
-    PageSource
-}
+export { PageSource };

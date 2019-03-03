@@ -9,7 +9,13 @@ enum ErrorType {
   FileNotFound = 'file is not found'
 }
 
+enum Postfix {
+  JS = '.js',
+  JSX = '.jsx'
+}
+
 export {
   LogColor,
   ErrorType,
+  Postfix,
 }

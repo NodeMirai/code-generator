@@ -1,13 +1,3 @@
-const fs = require("fs");
-import traverse from "@babel/traverse";
-import { AstUtilBase } from "./util";
-import { ErrorType } from "./constant";
-import innerConfig from "../../config/path";
-import PsModalFactory from "./psModalFactroy";
-import CodeGenerator from "./codeGenerator";
-
-const astUtilBase = new AstUtilBase();
-
 export interface Prop {
   name: string;
   value: string;
@@ -29,7 +19,6 @@ class ComponentSourseFactory {
   }
 }
 
-const csFactory: ComponentSourseFactory = new ComponentSourseFactory();
 
 export class ComponentSource {
   name: string;
@@ -52,97 +41,6 @@ export class ComponentSource {
     this._astOperate = astOperate;
   }
 
-  /**
-   * 初始化森林节点中每个内部组件库的ast，并拼接好对应的defaultProps
-   * @param resolveComponentPath
-   * @param children
-   */
-  public static initChildrenAst(
-    resolveComponentPath: string,
-    children: Array<ComponentSource>
-  ) {
-    if (!children || children.length === 0) return;
-    /**
-     * 配置解析
-     */
-    // 根据children获取component
-    children.forEach((cs: ComponentSource) => {
-      cs.propList = cs.propList || [];
-
-      // 如果是原生组件,则不查找defaultProps
-      if (!/\$/.test(cs.name)) {
-        // 首字母单词转小写, 约定组件名称全部使用小写
-        try {
-          cs.ast = astUtilBase.generatorAst(
-            `${resolveComponentPath}/${cs.name.toLocaleLowerCase()}/index.jsx`
-          );
-        } catch (e) {
-          switch (e.message) {
-            case ErrorType.FileNotFound:
-              /**
-               * 组件不存在时，需要递归生成
-               * 1. 在组件模型工厂中根据name查找对应的PageSource
-               * 2. 如果不存在，则将该组件记录在特定文件中，以便后续添加
-               */
-              const psModalFactory = new PsModalFactory();
-              const psModal = psModalFactory.generate(cs.name);
-              if (psModal !== undefined) {
-                CodeGenerator.main(innerConfig, psModal);
-              } else {
-                // 输出记录下来
-                fs.appendFile(
-                  innerConfig.modalLog,
-                  `${cs.name}不在模型库中\n`,
-                  (err: Error) => {
-                    if (err) throw err;
-                    console.log("The file has been saved!");
-                  }
-                );
-              }
-              break;
-            default:
-          }
-        } finally {
-          traverse(cs.ast, {
-            Identifier: function(path: any) {
-              if (path.node.name === "defaultProps") {
-                path.container.value.properties.forEach((item: any) => {
-                  const isPropExist = cs.propList.some(prop => {
-                    const name = item.key.name;
-                    if (typeof prop === "string") {
-                      return prop === name;
-                    } else {
-                      return prop.name === name;
-                    }
-                  });
-                  if (!isPropExist) {
-                    cs.propList.push(item.key.name);
-                  }
-                });
-              }
-            }
-          });
-        }
-      }
-      ComponentSource.initChildrenAst(resolveComponentPath, cs.children);
-    });
-  }
-
-  /**
-   * 初始化森林方法
-   * @param type
-   * @param children
-   */
-  public static initForest(type: string, children: Array<ComponentSource>) {
-    // 递归终止条件
-    if (!children || children.length === 0) return;
-    // 初始化每个节点对象
-    for (let i = 0; i < children.length; i++) {
-      const cs = csFactory.generate(type, children[i]);
-      children[i] = cs;
-      ComponentSource.initForest(cs.type, cs.children);
-    }
-  }
 }
 
 export default ComponentSourseFactory;
