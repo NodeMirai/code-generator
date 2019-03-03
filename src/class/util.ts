@@ -1,6 +1,6 @@
 const fs = require("fs");
 import * as babel from "@babel/core";
-import { pageModal } from "../../config/index";
+import { pageModel } from "../../config/index";
 import { ErrorType, Postfix } from "./constant";
 
 class AstUtilBase {
@@ -31,8 +31,8 @@ class AstUtilBase {
 }
 
 class ConstantUtil {
-  getPostfix(pageModal: string) {
-    switch (pageModal) {
+  getPostfix(pageModel: string) {
+    switch (pageModel) {
       case "-r":
         return Postfix.JSX;
       case "-p":

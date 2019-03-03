@@ -7,9 +7,9 @@ const pageModalMap: any = {
   '-t': 'taropage.jsx'
 }
 
-export const pageModal = process.argv[2]
+export const pageModel = process.argv[2]
 
-const modal = pageModalMap[pageModal]
+const modal = pageModalMap[pageModel]
 
 /**
  * 层级过多时可读性很差，不建议组件层级过多
@@ -41,7 +41,111 @@ const pageConfigList: Array<PageConfig> = [
         ]
       },
       {
-        name: 'ImageSwiper'
+        name: 'ImageSwiper',
+        propList: [
+          'items'
+        ]
+      },
+      {
+        name: '$View',
+        propList: [
+          {
+            name: 'className',
+            value: 'myorder__header-info',
+          }
+        ],
+        children: [
+          {
+            name: '$Text',
+            propList: [
+              {
+                name: 'className',
+                value: 'myorder__header-info__title',
+              }
+            ],
+            content: '1'
+          },
+          {
+            name: '$Text',
+            propList: [
+              {
+                name: 'className',
+                value: 'myorder__header-info__price',
+              }
+            ],
+            content: '1'
+          },
+          {
+            name: '$View',
+            propList: [
+              {
+                name: 'className',
+                value: 'myorder__header-info__cost',
+              }
+            ],
+            children: [
+              {
+                name: '$Text',
+                propList: [
+                  {
+                    name: 'className',
+                    value: 'text',
+                  }
+                ],
+                content: '1'
+              },
+              {
+                name: '$Text',
+                propList: [
+                  {
+                    name: 'className',
+                    value: 'num',
+                  }
+                ],
+                content: '1'
+              },
+              {
+                name: '$Text',
+                propList: [
+                  {
+                    name: 'className',
+                    value: 'text',
+                  }
+                ],
+                content: '1'
+              },
+              {
+                name: '$Text',
+                propList: [
+                  {
+                    name: 'className',
+                    value: 'unit',
+                  }
+                ],
+                content: '1'
+              },
+            ]
+          },
+          {
+            name: '$View',
+            propList: [
+              {
+                name: 'className',
+                value: 'myorder__header-info__invite',
+              },
+              {
+                name: 'onClick',
+                value: 'this.invite',
+              }
+            ],
+            children: [
+              {
+                name: '$Text',
+                content: '邀请同事，一起免费体验',
+              }
+            ]
+          }
+        ]
       }
     ]
   }

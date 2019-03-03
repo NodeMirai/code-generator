@@ -310,7 +310,8 @@ class PageSource {
     fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
       // if (err) throw err 文件夹存在的情况下删除文件重建
       const path = `${dirPath}/${pageModel === '-t' ? filename : 'index'}${constantUtil.getPostfix(pageModel)}`
-      fs.writeFile(path, out.code, (err: Error) => {
+      const code = out.code.replace(/>(,|;)\s?/gm, '>')
+      fs.writeFile(path, code, (err: Error) => {
         if (err) throw err;
         logger.log("yellow", `${filename}已生成到${outPath}`);
       });
