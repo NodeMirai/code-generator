@@ -66,6 +66,18 @@ class StrUtil {
       .map((item: string) => item[0].toUpperCase() + item.slice(1))
       .join('')
   }
+
+  /**
+   * 判断字符串是否为方法命名
+   * 判断依据：onXXX
+   */
+  isMethodAttr(str: string) {
+    if (!str || str.length < 3) return false
+    if (str.slice(0,2) !== 'on') return false
+    const char2 = str.charAt(2)
+    if ( char2 < 'A' || char2 > 'Z' ) return false
+    return true
+  }
 }
 
 export { 

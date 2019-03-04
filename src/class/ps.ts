@@ -20,16 +20,14 @@ const strUtil: StrUtil = new StrUtil();
 const logger: Logger = new Logger();
 const csFactory: ComponentSourseFactory = new ComponentSourseFactory();
 
+let count = 0;
 class PageSource {
-  attrCodeStr: Set<string>;
-  nativeComponentList: Set<string>;
-  componentList: Set<string>;
+  methodAttrList: Set<string> = new Set();
+  attrCodeList: Set<string> = new Set();
+  nativeComponentList: Set<string> = new Set();
+  componentList: Set<string> = new Set();
 
-  constructor() {
-    this.attrCodeStr = new Set();
-    this.nativeComponentList = new Set();
-    this.componentList = new Set();
-  }
+  constructor() {}
 
   generatorAstFromConfig(innerConfig: any, outConfig: any) {
     const {
@@ -81,13 +79,16 @@ class PageSource {
                * ImportNamespaceSpecifier: import * as tab from "Hahaha";
                */
               astUtilBase.getAstByCode(
-                `import ${strUtil.convertCamel(csName)} from '${componentPath}/${csName}'`
+                `import ${strUtil.convertCamel(
+                  csName
+                )} from '${componentPath}/${csName}'`
               )
             );
           });
           logger.log(LogColor.LOG, `${filename}内部组件import代码生成完毕`);
 
-          if (!nativeComponentPath || this.nativeComponentList.size === 0) return;
+          if (!nativeComponentPath || this.nativeComponentList.size === 0)
+            return;
           // 原生组件导入
           path.insertAfter(
             astUtilBase.getAstByCode(
@@ -121,11 +122,11 @@ class PageSource {
           children.forEach((cs: ComponentSource) => {
             childrenCode.push(this.insertChild(cs));
           });
-          if (this.attrCodeStr.size !== 0) {
+          if (this.attrCodeList.size !== 0) {
             block.unshiftContainer(
               "body",
               astUtilBase.getAstByCode(
-                `const { ${Array.from(this.attrCodeStr).join(
+                `const { ${Array.from(this.attrCodeList).join(
                   ", "
                 )} } = this.props`
               )
@@ -134,6 +135,20 @@ class PageSource {
               LogColor.LOG,
               `${LogColor.LOG}中render内部props声明完成`
             );
+          }
+
+          if (this.methodAttrList.size != 0) {
+            traverse(ast, {
+              ClassBody: path => {
+                const block = path as any
+                this.methodAttrList.forEach(methodName => {
+                  block.unshiftContainer(
+                    'body',
+                    t.classMethod('method', t.identifier(methodName), [], t.blockStatement([],[]))
+                  )
+                })
+              }
+            })
           }
 
           const jsxChild = astUtilBase.getAstByCode(childrenCode.join());
@@ -166,16 +181,34 @@ class PageSource {
   insertChild(cs: ComponentSource): string {
     let jsxAttrCodeStr = ""; // 每个树上组件属性代码片段
     if (cs.name[0] === "$") cs.name = cs.name.slice(1);
-    const camelName = strUtil.convertCamel(cs.name)
+    const camelName = strUtil.convertCamel(cs.name);
     // 拼接props所需属性和jsx标签属性
     cs.propList.forEach((prop: string | Prop) => {
       if (typeof prop === "string") {
-        // 仅字符串类型时拼接
-        this.attrCodeStr.add(prop);
-        jsxAttrCodeStr += `${prop}={${prop}} `;
+        if (strUtil.isMethodAttr(prop)) {
+          let propTmp = prop;
+          if (this.methodAttrList.has(prop)) {
+            prop = prop + ++count;
+          }
+          this.methodAttrList.add(prop);
+          jsxAttrCodeStr += `${propTmp}={this.${prop}} `;
+        } else {
+          this.attrCodeList.add(prop);
+          jsxAttrCodeStr += `${prop}={${prop}} `;
+        }
       } else {
-        const { name, value } = prop;
-        jsxAttrCodeStr += `${name}='${value}' `;
+        let { name, value } = prop;
+        if (strUtil.isMethodAttr(name)) {
+          let propTmp = name;
+          if (this.methodAttrList.has(name)) {
+            name = name + ++count;
+          }
+          this.methodAttrList.add(name);
+          jsxAttrCodeStr += `${propTmp}={this.${name}} `;
+        } else {
+          this.attrCodeList.add(name);
+          jsxAttrCodeStr += `${name}='${value}' `;
+        }
       }
     });
     // 根据jsx是否存在子节点属性确定拼接字符串方式
@@ -199,9 +232,7 @@ class PageSource {
         childrenCode.push(this.insertChild(cs.children[i]));
         cs.childCode = null;
       }
-      return `<${camelName} ${jsxAttrCodeStr} >${childrenCode.join()}</${
-        camelName
-      }>`;
+      return `<${camelName} ${jsxAttrCodeStr} >${childrenCode.join()}</${camelName}>`;
     }
   }
 
@@ -225,8 +256,8 @@ class PageSource {
       // 如果是原生组件,则不查找defaultProps
       if (cs.name[0] !== "$") {
         this.componentList.add(cs.name);
-        // 首字母单词转小写, 约定组件名称全部使用小写
         try {
+          // 首字母单词转小写, 约定组件名称全部使用小写
           cs.ast = astUtilBase.generatorAst(
             `${resolveComponentPath}/${cs.name.toLocaleLowerCase()}/index.js`
           );
@@ -315,10 +346,9 @@ class PageSource {
         pageModel === "-t" ? filename : "index"
       }${constantUtil.getPostfix(pageModel)}`;
       const code = out.code.replace(/>(,|;)\s?/gm, ">");
-      fs.writeFile(path, code, (err: Error) => {
-        if (err) throw err;
-        logger.log("yellow", `${filename}已生成到${outPath}`);
-      });
+
+      fs.writeFileSync(path, code);
+      logger.log("yellow", `${filename}已生成到${outPath}`);
 
       const styleFilename = stylename || "style.scss";
       const componentStyle = dirPath + "/style.scss";

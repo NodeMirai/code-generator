@@ -30,15 +30,6 @@
 - 
 
 ## todo
-1. 格式问题   -> />\?|>,|>;/
-- 换行问题如何解决 
-- 如何去除生成代码的尾部冒号
-- jsx生成时行末存在冒号问题
-3. 异常处理
-- 文件是否存在
-- 组件名称首字母转大写
-- 数组长度
-- 对象false等
 4. 第三方组件库导入
 5. 内部组件库定义支持 import {  } from ''形式，避免多行引入
 6. **缺少eslint代码规范**
@@ -122,12 +113,14 @@
 3. 全部组件开发完毕后
 
 ## bug list
-1. filename与cs的name相同时，生成代码会出现变量名重复的问题 close
+1. **filename与cs的name相同时，生成代码会出现变量名重复的问题 close**
+3. **children中name相同时重复引入组件代码重复  close**
+7. **组件与模板读取、webpack配置和输出时需要兼容js与jsx两种后缀：暂时仅使用js后缀   close**
+8. **cs名称使用中线分割时，生成的import与模板jsx部分以及导出部分需要处理name名称    close**  
+   例如'image-swiper' -> 'ImageSwiper'
+
+
 2. webpack多文件打包时，如果其中一个文件抛出异常需要如何处理
-3. children中name相同时重复引入组件代码重复  close
 4. initChildrenAst方法捕获异常处理存在问题，仅保证了defaultProps无法获取，而没有终止该cs的其他逻辑，应该把对应cs生成后清除
 5. ast遍历时获取节点结构流程硬编码，导致model内结构变化时报错
 6. webpack启动server，url 'appoint/'与'appoint'行为不一致
-7. 组件与模板读取、webpack配置和输出时需要兼容js与jsx两种后缀：暂时仅使用js后缀
-8. cs名称使用中线分割时，生成的import与模板jsx部分以及导出部分需要处理name名称  
-   例如'image-swiper' -> 'ImageSwiper'
