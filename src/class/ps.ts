@@ -87,7 +87,7 @@ class PageSource {
           });
           logger.log(LogColor.LOG, `${filename}内部组件import代码生成完毕`);
 
-          if (!nativeComponentPath) return;
+          if (!nativeComponentPath || this.nativeComponentList.size === 0) return;
           // 原生组件导入
           path.insertAfter(
             astUtilBase.getAstByCode(

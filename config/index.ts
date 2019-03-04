@@ -19,133 +19,13 @@ const pageConfigList: Array<PageConfig> = [
     modal,
     filename: 'myorder',
     className: 'myorder',
-    // nativeComponentPath: '@tarojs/components',
+    nativeComponentPath: '@tarojs/components',
     children: [
       {
-        name: '$View',
-        propList: [
-          {
-            name: 'className',
-            value: 'top-notice',
-          }
-        ],
-        children: [
-          {
-            name: '$Text',
-            content: '包袋预约将根据会员等级依次排队文案未定',
-          },
-          {
-            name: '$Text',
-            content: '?',
-          }
-        ]
+        name: 'address'
       },
       {
-        name: 'image-swiper',
-        propList: [
-          'items'
-        ]
-      },
-      {
-        name: '$View',
-        propList: [
-          {
-            name: 'className',
-            value: 'myorder__header-info',
-          }
-        ],
-        children: [
-          {
-            name: '$Text',
-            propList: [
-              {
-                name: 'className',
-                value: 'myorder__header-info__title',
-              }
-            ],
-            content: '1'
-          },
-          {
-            name: '$Text',
-            propList: [
-              {
-                name: 'className',
-                value: 'myorder__header-info__price',
-              }
-            ],
-            content: '1'
-          },
-          {
-            name: '$View',
-            propList: [
-              {
-                name: 'className',
-                value: 'myorder__header-info__cost',
-              }
-            ],
-            children: [
-              {
-                name: '$Text',
-                propList: [
-                  {
-                    name: 'className',
-                    value: 'text',
-                  }
-                ],
-                content: '1'
-              },
-              {
-                name: '$Text',
-                propList: [
-                  {
-                    name: 'className',
-                    value: 'num',
-                  }
-                ],
-                content: '1'
-              },
-              {
-                name: '$Text',
-                propList: [
-                  {
-                    name: 'className',
-                    value: 'text',
-                  }
-                ],
-                content: '1'
-              },
-              {
-                name: '$Text',
-                propList: [
-                  {
-                    name: 'className',
-                    value: 'unit',
-                  }
-                ],
-                content: '1'
-              },
-            ]
-          },
-          {
-            name: '$View',
-            propList: [
-              {
-                name: 'className',
-                value: 'myorder__header-info__invite',
-              },
-              {
-                name: 'onClick',
-                value: 'this.invite',
-              }
-            ],
-            children: [
-              {
-                name: '$Text',
-                content: '邀请同事，一起免费体验',
-              }
-            ]
-          }
-        ]
+        name: 'bag-info'
       }
     ]
   }
