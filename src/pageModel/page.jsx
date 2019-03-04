@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
+//import
 import './style.scss'
 
-//import
 
 class Demo extends Component {
   

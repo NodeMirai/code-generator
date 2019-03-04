@@ -1,7 +1,7 @@
 import Taro, { Component } from "@tarojs/taro";
 import { connect } from "@tarojs/redux"
-import './style.scss'
 //import
+import './style.scss'
 
 class Demo extends Component {
   

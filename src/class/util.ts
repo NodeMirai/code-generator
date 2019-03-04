@@ -54,8 +54,23 @@ class FsUtil {
   }
 }
 
+class StrUtil {
+
+  /**
+   * '-'分割改为首字母大写
+   * @param str 
+   */
+  convertCamel(str: string) {
+    return str
+      .split('-')
+      .map((item: string) => item[0].toUpperCase() + item.slice(1))
+      .join('')
+  }
+}
+
 export { 
     AstUtilBase, 
     FsUtil,
     ConstantUtil, 
+    StrUtil,
 };

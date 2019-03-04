@@ -24,7 +24,10 @@
 - webpack-dev-server提供访问页面服务，且必须无缓存(webpack已实现)
 10. 对h5与taro两种情况下各输出变量的变化进行封装
 - taro：输出文件必须以js为后缀，且js文件名与文件夹名一致
-
+11. 各文件名的统一管理
+- 组件文件名  -> initChildrenAst中
+- 代码中import 标签 导出一致 
+- 
 
 ## todo
 1. 格式问题   -> />\?|>,|>;/
@@ -126,3 +129,5 @@
 5. ast遍历时获取节点结构流程硬编码，导致model内结构变化时报错
 6. webpack启动server，url 'appoint/'与'appoint'行为不一致
 7. 组件与模板读取、webpack配置和输出时需要兼容js与jsx两种后缀：暂时仅使用js后缀
+8. cs名称使用中线分割时，生成的import与模板jsx部分以及导出部分需要处理name名称  
+   例如'image-swiper' -> 'ImageSwiper'

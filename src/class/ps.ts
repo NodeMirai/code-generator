@@ -4,7 +4,7 @@ import g from "@babel/generator";
 import * as t from "@babel/types";
 
 import ComponentSourseFactory, { ComponentSource, Prop } from "../class/cs";
-import { AstUtilBase, FsUtil, ConstantUtil } from "./util";
+import { AstUtilBase, FsUtil, ConstantUtil, StrUtil } from "./util";
 import Logger from "./log";
 import { LogColor } from "./constant";
 import { ErrorType } from "./constant";
@@ -16,6 +16,7 @@ import { pageModel } from "../../config/";
 const astUtilBase: AstUtilBase = new AstUtilBase();
 const constantUtil: ConstantUtil = new ConstantUtil();
 const fsUtil: FsUtil = new FsUtil();
+const strUtil: StrUtil = new StrUtil();
 const logger: Logger = new Logger();
 const csFactory: ComponentSourseFactory = new ComponentSourseFactory();
 
@@ -80,7 +81,7 @@ class PageSource {
                * ImportNamespaceSpecifier: import * as tab from "Hahaha";
                */
               astUtilBase.getAstByCode(
-                `import ${csName} from '${componentPath}'`
+                `import ${strUtil.convertCamel(csName)} from '${componentPath}/${csName}'`
               )
             );
           });
@@ -165,6 +166,7 @@ class PageSource {
   insertChild(cs: ComponentSource): string {
     let jsxAttrCodeStr = ""; // 每个树上组件属性代码片段
     if (cs.name[0] === "$") cs.name = cs.name.slice(1);
+    const camelName = strUtil.convertCamel(cs.name)
     // 拼接props所需属性和jsx标签属性
     cs.propList.forEach((prop: string | Prop) => {
       if (typeof prop === "string") {
@@ -180,14 +182,14 @@ class PageSource {
     if ((!cs.children || !Array.isArray(cs.children)) && !cs.content) {
       cs.childCode = cs.childCode.replace(
         "|",
-        `<${cs.name} ${jsxAttrCodeStr} />`
+        `<${camelName} ${jsxAttrCodeStr} />`
       );
       return cs.childCode;
     }
     if (cs.content || (cs.children && cs.children.length === 0)) {
       cs.childCode = cs.childCode.replace(
         "|",
-        `<${cs.name} ${jsxAttrCodeStr} >${cs.content}</${cs.name}>`
+        `<${camelName} ${jsxAttrCodeStr} >${cs.content}</${camelName}>`
       );
       return cs.childCode;
     } else {
@@ -197,8 +199,8 @@ class PageSource {
         childrenCode.push(this.insertChild(cs.children[i]));
         cs.childCode = null;
       }
-      return `<${cs.name} ${jsxAttrCodeStr} >${childrenCode.join()}</${
-        cs.name
+      return `<${camelName} ${jsxAttrCodeStr} >${childrenCode.join()}</${
+        camelName
       }>`;
     }
   }
@@ -309,8 +311,10 @@ class PageSource {
     // 待整理
     fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
       // if (err) throw err 文件夹存在的情况下删除文件重建
-      const path = `${dirPath}/${pageModel === '-t' ? filename : 'index'}${constantUtil.getPostfix(pageModel)}`
-      const code = out.code.replace(/>(,|;)\s?/gm, '>')
+      const path = `${dirPath}/${
+        pageModel === "-t" ? filename : "index"
+      }${constantUtil.getPostfix(pageModel)}`;
+      const code = out.code.replace(/>(,|;)\s?/gm, ">");
       fs.writeFile(path, code, (err: Error) => {
         if (err) throw err;
         logger.log("yellow", `${filename}已生成到${outPath}`);

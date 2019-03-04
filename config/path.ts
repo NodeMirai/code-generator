@@ -1,10 +1,22 @@
 const path = require('path')
+const { pageModel } = require('../config')
 
-const componentPath = '@components/shop-detail/image-swiper' // './src/component'   // 组件资源位置
-const resolveComponentPath = path.resolve(componentPath)
+const pathMap: any = {
+  '-t': {
+    outPath: '/Users/qudian/app-wx-vipluxury/src/pack1/pages',
+    componentPath: '@components',
+    resolveComponentPath: '/Users/qudian/app-wx-vipluxury/src/components'
+  }
+}
+
+const {
+  componentPath = './src/component',
+  resolveComponentPath = path.resolve(componentPath),
+  outPath = path.resolve('./dist')
+} = pathMap[pageModel]
+
 const modelPath = path.resolve('./src/pageModel')  //  用于配置输出页面的页面模型
 const stylePath = path.resolve('./src/styleModel')
-const outPath = '/Users/qudian/app-wx-vipluxury/src/pack1/pages' // path.resolve('./dist')  // 输出文件位置
 
 export default {
   componentPath,

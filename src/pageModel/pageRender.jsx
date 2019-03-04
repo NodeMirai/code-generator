@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+//import
 import './style.scss'
 
-//import
 
 class Demo extends Component {
   

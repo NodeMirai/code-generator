@@ -19,7 +19,7 @@ const pageConfigList: Array<PageConfig> = [
     modal,
     filename: 'myorder',
     className: 'myorder',
-    nativeComponentPath: '@tarojs/components',
+    // nativeComponentPath: '@tarojs/components',
     children: [
       {
         name: '$View',
@@ -41,7 +41,7 @@ const pageConfigList: Array<PageConfig> = [
         ]
       },
       {
-        name: 'ImageSwiper',
+        name: 'image-swiper',
         propList: [
           'items'
         ]
