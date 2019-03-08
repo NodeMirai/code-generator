@@ -22,10 +22,10 @@ const csFactory: ComponentSourseFactory = new ComponentSourseFactory();
 
 let count = 0;
 class PageSource {
-  methodAttrList: Set<string> = new Set();
-  attrCodeList: Set<string> = new Set();
-  nativeComponentList: Set<string> = new Set();
-  componentList: Set<string> = new Set();
+  methodAttrList: Set<string> = new Set();      // 所有方法属性的集合，会自动声明在页面中
+  attrCodeList: Set<string> = new Set();        // 属性集合，这里有问题。。。重复属性只获取了一次
+  nativeComponentList: Set<string> = new Set(); // 原生组件集合，用于import原生部分
+  componentList: Set<string> = new Set();       // 组件名称集合，用于当前页面代码的import部分
 
   constructor() {}
 
