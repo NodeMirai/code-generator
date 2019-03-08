@@ -11,9 +11,9 @@ const pathMap: any = {
 
 const {
   componentPath = './src/component',
-  resolveComponentPath = path.resolve(componentPath),
+  resolveComponentPath = path.resolve('./src/component'),
   outPath = path.resolve('./dist')
-} = pathMap[pageModel]
+} = pathMap[pageModel] || {}
 
 const modelPath = path.resolve('./src/pageModel')  //  用于配置输出页面的页面模型
 const stylePath = path.resolve('./src/styleModel')

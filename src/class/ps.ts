@@ -13,12 +13,12 @@ import PsModalFactory from "./psModalFactroy";
 import CodeGenerator from "./codeGenerator";
 import { pageModel } from "../../config/";
 
-const astUtilBase: AstUtilBase = new AstUtilBase();
-const constantUtil: ConstantUtil = new ConstantUtil();
-const fsUtil: FsUtil = new FsUtil();
-const strUtil: StrUtil = new StrUtil();
-const logger: Logger = new Logger();
-const csFactory: ComponentSourseFactory = new ComponentSourseFactory();
+const astUtilBase = new AstUtilBase();
+const constantUtil = new ConstantUtil();
+const fsUtil = new FsUtil();
+const strUtil = new StrUtil();
+const logger = new Logger();
+const csFactory = new ComponentSourseFactory();
 
 let count = 0;
 class PageSource {
