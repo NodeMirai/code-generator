@@ -219,7 +219,6 @@ class PageSource {
           this.methodAttrSet.add(name);
           jsxAttrCodeStr += `${propTmp}={this.${name}} `;
         } else {
-          this.attrCodeListSet.add(name);
           jsxAttrCodeStr += `${name}='${value}' `;
         }
       }
