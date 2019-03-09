@@ -75,7 +75,60 @@ const pageConfigList: Array<PageConfig> = [
             ]
           }
         ]
-      }
+      },
+      {
+        name: '&List',
+        propList: [
+          {
+            name: 'renderHeader',
+            value: 'list title'
+          }
+        ],
+        children: [
+          {
+            name: '&Item',
+            propList: [
+              {
+                name: 'arrow',
+                value: 'horizontal',
+              },
+              {
+                name: 'multipleLine',
+                value: 'true'
+              }
+            ],
+            children: [
+              {
+                name: '&Brief',
+                content: '副标题',
+              }
+            ]
+          },
+          {
+            name: '&Item',
+            propList: [
+              {
+                name: 'arrow',
+                value: 'horizontal',
+              },
+              {
+                name: 'thumb',
+                value: 'https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png'
+              },
+              {
+                name: 'multipleLine',
+                value: 'true'
+              }
+            ],
+            children: [
+              {
+                name: '&Brief',
+                content: '副标题',
+              }
+            ]
+          }
+        ]
+      },
     ]
   }
 ]

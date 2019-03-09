@@ -367,7 +367,7 @@ class PageSource {
         const path = `${dirPath}/${
           pageModel === "-t" ? filename : "index"
           }${constantUtil.getPostfix(pageModel)}`;
-        const code = out.code // .replace(/>(,|;)\s?/gm, ">");
+        const code = out.code.replace(/>(,|, |;)\s?(<|\n)/gm, ">$2");
 
         fs.writeFileSync(path, prettier.format(code));
         logger.log("yellow", `${filename}已生成到${outPath}`);
