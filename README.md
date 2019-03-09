@@ -28,16 +28,19 @@
 - 组件文件名  -> initChildrenAst中
 - 代码中import 标签 导出一致 
 12. **如果propList属性名以on开头则视为事件，将该事件代码自动声明在组件中**
+13. **使用prettier工具直接格式化生成的code**
+14. 第三方组件库导入
+
 
 ## todo
-4. 第三方组件库导入
 5. 内部组件库定义支持 import {  } from ''形式，避免多行引入
 6. **缺少eslint代码规范**
 7. **公共逻辑缺少单元测试与集成测试，需要最终生成代码测试覆盖率报告**
 8. 生成的组件放到对应文件夹中
 9. 生成的页面代码放入文件夹中，文件夹中加入style.scss样式
 10. 异步流程promise封装
-11. **使用eslint或者editorconfig等工具直接格式化ast代码**
+11. **建mongo数据库存储ps与cs，建node层存储可用的配置**
+12. 引入的组件中，其属性包含其他组件时，需要提前导出
 
 ## node项目下使用ts代码重构
 1. 创建tsconfig.json，模版如下
@@ -101,6 +104,10 @@
 { loader: 'postcss-loader', options: { sourceMap: true } }
 { loader: 'sass-loader', options: { sourceMap: true } }
 10. JSON.stringify(path)由于path对象中存在pathPath，循环引用会报错
+11. The authenticity of host '47.244.108.175 (47.244.108.175)' can't be established.
+ECDSA key fingerprint is SHA256:zS/26Fh5RpILLqnmjYv4G2Tuc8JzUeLSq1kB8i2TcQk.
+Are you sure you want to continue connecting (yes/no)? yes
+
 
 ## 优化
 1. 构造参数过多时如何处理更方便

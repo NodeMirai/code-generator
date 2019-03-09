@@ -12,20 +12,69 @@ export const pageModel = process.argv[2]
 const modal = pageModalMap[pageModel]
 
 /**
+ * $: 原生组件      nativeComponentPath
+ * &: 第三方组件    thirdComponentPath
  * 层级过多时可读性很差，不建议组件层级过多
  */
 const pageConfigList: Array<PageConfig> = [
   {
     modal,
-    filename: 'myorder',
-    className: 'myorder',
-    nativeComponentPath: '@tarojs/components',
+    filename: 'listPage',
+    className: 'list-page',
+    thirdComponentPath: 'antd-mobile',
     children: [
       {
-        name: 'address'
-      },
-      {
-        name: 'bag-info'
+        name: '&List',
+        propList: [
+          {
+            name: 'renderHeader',
+            value: 'list title'
+          }
+        ],
+        children: [
+          {
+            name: '&Item',
+            propList: [
+              {
+                name: 'arrow',
+                value: 'horizontal',
+              },
+              {
+                name: 'multipleLine',
+                value: 'true'
+              }
+            ],
+            children: [
+              {
+                name: '&Brief',
+                content: '副标题',
+              }
+            ]
+          },
+          {
+            name: '&Item',
+            propList: [
+              {
+                name: 'arrow',
+                value: 'horizontal',
+              },
+              {
+                name: 'thumb',
+                value: 'https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png'
+              },
+              {
+                name: 'multipleLine',
+                value: 'true'
+              }
+            ],
+            children: [
+              {
+                name: '&Brief',
+                content: '副标题',
+              }
+            ]
+          }
+        ]
       }
     ]
   }

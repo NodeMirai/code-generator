@@ -8,6 +8,8 @@ import * as shell from "shelljs";
 import HtmlWebpackPlugin = require("html-webpack-plugin");
 const px2rem = require("postcss-px2rem");
 const autoprefixer = require("autoprefixer");
+import { Postfix } from '../src/class/constant';
+import { pageModel } from './index';
 
 const outputPath = path.resolve(__dirname, "../dist");
 const entry: any = {};
@@ -15,7 +17,7 @@ const htmlPluginList: Array<HtmlWebpackPlugin> = [];
 
 shell.cd(outputPath);
 shell.ls().forEach(filename => {
-  entry[filename + "/" + filename] = outputPath + "/" + filename + "/index.js";
+  entry[filename + "/" + filename] = `${outputPath}/${filename}/index${pageModel !== '-t' ? Postfix.JSX: Postfix.JS }`;
   htmlPluginList.push(
     new HtmlWebpackPlugin({
       filename: filename + "/index.html",
@@ -39,7 +41,7 @@ const config: any = {
   devServer: {
     contentBase: path.join(__dirname, "../build"),
     compress: true,
-    port: 9000
+    port: 8080
   },
   module: {
     rules: [

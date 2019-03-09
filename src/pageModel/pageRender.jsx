@@ -5,16 +5,12 @@ import './style.scss'
 
 
 class Demo extends Component {
-  
-  static defaultProps = {
-    hehe: 1
-  }
 
   render() {
-    
+
     return (
       <div className='demo'>
-        
+
       </div>
     )
   }
