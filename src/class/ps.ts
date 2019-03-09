@@ -2,6 +2,7 @@ const fs = require("fs");
 import traverse from "@babel/traverse";
 import g from "@babel/generator";
 import * as t from "@babel/types";
+import * as prettier from 'prettier'
 
 import ComponentSourseFactory, { ComponentSource, Prop } from "../class/cs";
 import { AstUtilBase, FsUtil, ConstantUtil, StrUtil } from "./util";
@@ -347,7 +348,7 @@ class PageSource {
       }${constantUtil.getPostfix(pageModel)}`;
       const code = out.code.replace(/>(,|;)\s?/gm, ">");
 
-      fs.writeFileSync(path, code);
+      fs.writeFileSync(path, prettier.format(code));
       logger.log("yellow", `${filename}已生成到${outPath}`);
 
       const styleFilename = stylename || "style.scss";
