@@ -340,24 +340,35 @@ class PageSource {
       comments: false
     });
     const dirPath = outPath + "/" + filename;
-    // 待整理
-    fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
-      // if (err) throw err 文件夹存在的情况下删除文件重建
-      const path = `${dirPath}/${
-        pageModel === "-t" ? filename : "index"
-      }${constantUtil.getPostfix(pageModel)}`;
-      const code = out.code.replace(/>(,|;)\s?/gm, ">");
 
-      fs.writeFileSync(path, prettier.format(code));
-      logger.log("yellow", `${filename}已生成到${outPath}`);
+    // async await 
+    fs.stat(outPath, (err: Error) => {
+      if (err) {
+        fs.mkdirSync(outPath)
+      }
+      // 待整理
+      fs.mkdir(dirPath, { recursive: true }, (err: Error) => {
+        if (err) {
+          console.warn(err)
+          return
+        } 
+        const path = `${dirPath}/${
+          pageModel === "-t" ? filename : "index"
+        }${constantUtil.getPostfix(pageModel)}`;
+        const code = out.code.replace(/>(,|;)\s?/gm, ">");
 
-      const styleFilename = stylename || "style.scss";
-      const componentStyle = dirPath + "/style.scss";
-      // 判断组件文件夹中是否存在样式文件，存在则不进行复制操作
-      fs.access(componentStyle, fs.constants.F_OK, (err: Error) => {
-        if (err) fsUtil.copy(stylePath + "/" + styleFilename, componentStyle);
+        fs.writeFileSync(path, prettier.format(code));
+        logger.log("yellow", `${filename}已生成到${outPath}`);
+
+        const styleFilename = stylename || "style.scss";
+        const componentStyle = dirPath + "/style.scss";
+        // 判断组件文件夹中是否存在样式文件，存在则不进行复制操作
+        fs.access(componentStyle, fs.constants.F_OK, (err: Error) => {
+          if (err) fsUtil.copy(stylePath + "/" + styleFilename, componentStyle);
+        });
       });
-    });
+    })
+    
   }
 }
 
