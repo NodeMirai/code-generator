@@ -112,6 +112,14 @@ class PageSource {
           logger.log(LogColor.LOG, `${filename}原生组件import代码生成完毕`);
         }
       },
+      VariableDeclaration: path => {
+        const model: any = path.node.declarations.find((item: any) => {
+          return item.id.name === 'model' 
+        })
+        if (model) {
+          model.init.value = PageName[0].toLowerCase() + PageName.slice(1)
+        }
+      },
       /**
        * render中属性声明部分与children部分
        * @param path
@@ -150,16 +158,10 @@ class PageSource {
           }
 
           if (this.methodAttrSet.size != 0) {
-            traverse(ast, {
-              ClassBody: path => {
-                const block = path as any
-                this.methodAttrSet.forEach(methodName => {
-                  block.unshiftContainer(
-                    'body',
-                    t.classMethod('method', t.identifier(methodName), [], t.blockStatement([], []))
-                  )
-                })
-              }
+            this.methodAttrSet.forEach(methodName => {
+              path.insertBefore(
+                t.classMethod('method', t.identifier(methodName), [], t.blockStatement([], []))
+              )
             })
           }
 
@@ -346,7 +348,6 @@ class PageSource {
     for (let i = 0; i < children.length; i++) {
       const cs = csFactory.generate(type, children[i]);
       children[i] = cs;
-      console.log(cs)
       this.initForest(cs.type, cs.children);
     }
   }
@@ -356,7 +357,8 @@ class PageSource {
     // 输出部分
     const out = g(ast, {
       quotes: "double",
-      comments: false
+      comments: false,
+      retainLines: true,
     });
     const dirPath = outPath + "/" + filename;
     
