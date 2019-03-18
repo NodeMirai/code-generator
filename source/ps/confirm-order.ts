@@ -17,14 +17,16 @@ const pageConfig: PageConfig = {
       name: 'goods-info'
     },
     {
-      name: 'mylist'
+      name: 'mylist',
+      useDefaultProp: false,
     },
     {
       name: '$View',
       className: 'comfirm-order__ft bottom-fix',
       children: [
         {
-          name: 'input-item'
+          name: 'input-item',
+          useDefaultProp: false,
         }
       ]
     }

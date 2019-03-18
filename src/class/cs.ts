@@ -6,6 +6,7 @@ export interface Prop {
 export interface CsProps {
   name: string;
   className: string;
+  useDefaultProp?: boolean;
   propList: Array<string | Prop>;
   children?: Array<ComponentSource>;
   content?: string;
@@ -24,6 +25,7 @@ class ComponentSourseFactory {
 export class ComponentSource {
   name: string;
   className: string;
+  useDefaultProp: boolean
   propList: Array<string | Prop>;
   children: Array<ComponentSource>;
   ast: any;
@@ -35,6 +37,7 @@ export class ComponentSource {
   constructor(props: CsProps) {
     this.name = props.name;
     this.className = props.className
+    this.useDefaultProp = props.useDefaultProp === undefined ? true : props.useDefaultProp
     this.propList = props.propList;
     this.children = props.children;
     this.content = props.content;

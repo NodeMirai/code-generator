@@ -13,6 +13,7 @@ interface PageConfig {
 interface ComponentConfig {
   name: string
   className?: string
+  useDefaultProp?: boolean
   propList?: Array<object|string>
   content?: string
   children?: Array<ComponentConfig>

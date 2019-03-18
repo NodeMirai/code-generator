@@ -279,6 +279,7 @@ class PageSource {
           break;
         default:
           this.componentSet.add(cs.name);
+          if (!cs.useDefaultProp) break;
           try {
             // 首字母单词转小写, 约定组件名称全部使用小写
             cs.ast = astUtilBase.generatorAst(

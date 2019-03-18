@@ -1,6 +1,6 @@
 import Taro, { Component } from "@tarojs/taro";
-import { connect } from "@tarojs/redux"
 //import
+import { connect } from "@tarojs/redux"
 import action from '@utils/action'
 import './style.scss'
 
