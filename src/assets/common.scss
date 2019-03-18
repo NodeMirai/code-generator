@@ -21,6 +21,10 @@
   width: 100%;
   top: 0;
 }
+// 每行num个item
+@mixin lay($num) {
+  
+}
 
 // 2. 盒模型参数
 @for $l from 1 through 10 {

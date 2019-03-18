@@ -64,7 +64,7 @@ class PageSource {
      * 3. const 结构语句
      * 4. render中return的div中插入component以及属性
      */
-    const PageName = filename[0].toUpperCase() + filename.slice(1);
+    const PageName = strUtil.convertCamel(filename) // filename[0].toUpperCase() + filename.slice(1);
     traverse(ast, {
       /**
        * import模块引入部分
@@ -194,7 +194,9 @@ class PageSource {
     let jsxAttrCodeStr = ""; // 每个树上组件属性代码片段
     if (cs.name[0] === "$") cs.name = cs.name.slice(1);
     if (cs.name[0] === "&") cs.name = cs.name.slice(1);
+    if (cs.className) cs.propList.push({ name: 'className', value: cs.className })
     const camelName = strUtil.convertCamel(cs.name);
+
     // 拼接props所需属性和jsx标签属性
     cs.propList.forEach((prop: string | Prop) => {
       if (typeof prop === "string") {
@@ -344,6 +346,7 @@ class PageSource {
     for (let i = 0; i < children.length; i++) {
       const cs = csFactory.generate(type, children[i]);
       children[i] = cs;
+      console.log(cs)
       this.initForest(cs.type, cs.children);
     }
   }
@@ -356,7 +359,7 @@ class PageSource {
       comments: false
     });
     const dirPath = outPath + "/" + filename;
-
+    
     // async await 
     fs.stat(outPath, (err: Error) => {
       if (err) {
@@ -369,7 +372,7 @@ class PageSource {
           }${constantUtil.getPostfix(pageModel)}`;
         const code = out.code.replace(/>(,|, |;)\s?(<|\n)/gm, ">$2");
 
-        fs.writeFileSync(path, prettier.format(code));
+        fs.writeFileSync(path, prettier.format(code, { parser: "babel" }));
         logger.log("yellow", `${filename}已生成到${outPath}`);
 
         const styleFilename = stylename || "style.scss";

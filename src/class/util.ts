@@ -19,7 +19,7 @@ class AstUtilBase {
     const ast = babel.parse(sourceCode, {
       parserOpts: {
         sourceType: "module",
-        plugins: ["classProperties", "jsx"]
+        plugins: ["classProperties", "jsx", "decorators-legacy"]
       }
     });
     return ast;
@@ -58,9 +58,11 @@ class StrUtil {
 
   /**
    * '-'分割改为首字母大写
+   * 无分割线情况下直接处理为首字母大写 -> 待整理
    * @param str 
    */
   convertCamel(str: string) {
+    if (str.indexOf('-') === -1) return str[0].toUpperCase() + str.slice(1)
     return str
       .split('-')
       .map((item: string) => item[0].toUpperCase() + item.slice(1))

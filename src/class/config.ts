@@ -12,6 +12,7 @@ interface PageConfig {
 
 interface ComponentConfig {
   name: string
+  className?: string
   propList?: Array<object|string>
   content?: string
   children?: Array<ComponentConfig>
@@ -19,4 +20,5 @@ interface ComponentConfig {
 
 export {
   PageConfig,
+  ComponentConfig
 }

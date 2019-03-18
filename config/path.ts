@@ -3,9 +3,9 @@ const { pageModel } = require('../config')
 
 const pathMap: any = {
   '-t': {
-    outPath: '/Users/qudian/app-wx-vipluxury/src/pack1/pages',
+    outPath: '/Users/qudian/app-wx-laifenqi_toB/src/pack1/pages', // '/Users/qudian/Documents/project/store-base/src/pages',
     componentPath: '@components',
-    resolveComponentPath: '/Users/qudian/app-wx-vipluxury/src/components'
+    resolveComponentPath: '/Users/qudian/app-wx-laifenqi_toB/src/components'// '/Users/qudian/Documents/project/store-base/src/component'
   }
 }
 

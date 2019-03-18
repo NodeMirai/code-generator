@@ -5,6 +5,7 @@ export interface Prop {
 
 export interface CsProps {
   name: string;
+  className: string;
   propList: Array<string | Prop>;
   children?: Array<ComponentSource>;
   content?: string;
@@ -22,6 +23,7 @@ class ComponentSourseFactory {
 
 export class ComponentSource {
   name: string;
+  className: string;
   propList: Array<string | Prop>;
   children: Array<ComponentSource>;
   ast: any;
@@ -32,6 +34,7 @@ export class ComponentSource {
 
   constructor(props: CsProps) {
     this.name = props.name;
+    this.className = props.className
     this.propList = props.propList;
     this.children = props.children;
     this.content = props.content;
