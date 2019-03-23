@@ -13,8 +13,8 @@
 6. ComponentSource类中添加content属性用于添加文本
 7. 代码生成进度log所需记录部分: npm install -D chalk | yarn add --dev chalk
 - 读取xx模版ast
-- 初始化xx森林
-- 每个xx节点生成ast
+- 初始化xx森林
+- 每个xx节点生成ast
 - import引入xxx
 - render中xxx属性生成
 - render中xxx模板生成
@@ -119,7 +119,7 @@ Are you sure you want to continue connecting (yes/no)? yes
 3. 全部组件开发完毕后
 
 ## bug list
-1. **filename与cs的name相同时，生成代码会出现变量名重复的问题 close**
+1. **filename与cs的name相同时，生成代码会出现变量名重复的问题 close**
 3. **children中name相同时重复引入组件代码重复  close**
 7. **组件与模板读取、webpack配置和输出时需要兼容js与jsx两种后缀：暂时仅使用js后缀   close**
 8. **cs名称使用中线分割时，生成的import与模板jsx部分以及导出部分需要处理name名称    close**  
