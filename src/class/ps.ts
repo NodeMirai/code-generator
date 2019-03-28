@@ -40,7 +40,7 @@ class PageSource {
       thirdComponentPath,
       className,
       opt,
-      children
+      children = []
     } = outConfig;
     const { componentPath, resolveComponentPath, modelPath } = innerConfig;
     const outModelPath = `${modelPath}/${modal}`;
@@ -194,10 +194,14 @@ class PageSource {
 
   insertChild(cs: ComponentSource): string {
     let jsxAttrCodeStr = ""; // 每个树上组件属性代码片段
-    if (cs.name[0] === "$") cs.name = cs.name.slice(1);
-    if (cs.name[0] === "&") cs.name = cs.name.slice(1);
+    if (cs.name[0] === "$") { 
+      cs.name = cs.name.slice(1); 
+    } else if (cs.name[0] === "&") {
+      cs.name = cs.name.slice(1);
+    } else {
+      cs.name = strUtil.convertCamel(cs.name);
+    }
     if (cs.className) cs.propList.push({ name: 'className', value: cs.className })
-    const camelName = strUtil.convertCamel(cs.name);
 
     // 拼接props所需属性和jsx标签属性
     cs.propList.forEach((prop: string | Prop) => {
@@ -231,14 +235,14 @@ class PageSource {
     if ((!cs.children || !Array.isArray(cs.children)) && !cs.content) {
       cs.childCode = cs.childCode.replace(
         "|",
-        `<${camelName} ${jsxAttrCodeStr} />`
+        `<${cs.name} ${jsxAttrCodeStr} />`
       );
       return cs.childCode;
     }
     if (cs.content || (cs.children && cs.children.length === 0)) {
       cs.childCode = cs.childCode.replace(
         "|",
-        `<${camelName} ${jsxAttrCodeStr} >${cs.content}</${camelName}>`
+        `<${cs.name} ${jsxAttrCodeStr} >${cs.content}</${cs.name}>`
       );
       return cs.childCode;
     } else {
@@ -248,7 +252,7 @@ class PageSource {
         childrenCode.push(this.insertChild(cs.children[i]));
         cs.childCode = null;
       }
-      return `<${camelName} ${jsxAttrCodeStr} >${childrenCode.join()}</${camelName}>`;
+      return `<${cs.name} ${jsxAttrCodeStr} >${childrenCode.join()}</${cs.name}>`;
     }
   }
 

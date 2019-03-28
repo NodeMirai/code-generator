@@ -16,8 +16,23 @@ export const pageModel = process.argv[2]
  * 层级过多时可读性很差，不建议组件层级过多
  */
 const pageConfigList: Array<PageConfig> = [
-  confirmOrder,
-  selectAddressList,
+  /* confirmOrder,
+  selectAddressList, */
+  {
+    modal: 'pageRender.jsx',
+    filename: 'address-select',
+    children: [
+      {
+        name: '$div',
+        propList: [
+          {
+            name: 'style',
+            value: 'background: red;'
+          }
+        ]
+      }
+    ]
+  }
 ]
 
 export default pageConfigList

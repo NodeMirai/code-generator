@@ -39,7 +39,7 @@ export class ComponentSource {
     this.className = props.className
     this.useDefaultProp = props.useDefaultProp === undefined ? true : props.useDefaultProp
     this.propList = props.propList;
-    this.children = props.children;
+    this.children = props.children || [];
     this.content = props.content;
   }
 

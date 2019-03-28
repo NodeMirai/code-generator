@@ -1,12 +1,14 @@
 import Taro, { Component } from "@tarojs/taro";
-//import
 import { connect } from "@tarojs/redux"
 import action from '@utils/action'
+//import
 import './style.scss'
 
 // 声明saga中model名称
 const model = 'confirmOrder'
-@connect((state) => state[model])
+@connect(state => ({
+  ...state[model],
+}))
 class Demo extends Component {
   componentDidMount() {
     const { dispatch } = this.props
