@@ -23,7 +23,7 @@
     "@types/babel__traverse": "^7.0.5",
     "@types/prettier": "^1.16.1",
     "antd-mobile": "^2.2.9",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.13.1",
     "postcss-px2rem": "^0.3.0",
     "prettier": "^1.16.4",
     "react": "^16.8.2",
